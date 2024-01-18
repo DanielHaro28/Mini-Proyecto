@@ -4,16 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>Admin</title>
 </head>
 
 <body>
     <div class="fondo">
-        <h1>Hangman Game</h1>
+        <h1>Ingresa tu Apodo</h1>
         <div class="btn-box">
-
-            <a href="playername" class="btn"><button>Jugadores</button></a>
-            <a href="admin" class="btn"><button>Anfitriones</button></a>
+            
+            <input type="text" id="jname"/>
+            <!--<a href="" class="btn" id="Accept"><button>Aceptar</button></a>>-->
+            <button id="Accept">Aceptar</button>
+            <a href="/" class="btn"><button>Regresar</button></a>
 
         </div>
     </div>
@@ -67,5 +69,24 @@
         color: black;
     }
 </style>
+<script>
+
+    const socket = new WebSocket("ws://localhost:8080");
+
+    document.getElementById("Accept").addEventListener("click", function() {
+        var playerName = document.getElementById("jname").value;
+        console.log(playerName);
+        socket.
+        socket.addEventListener("open", (event) => {
+            console.log("Conectado");
+            socket.send(playerName);
+        });
+        socket.addEventListener("message", (event) => {
+            console.log("Message from server ", event.data);
+        });
+});    
+</script>
+    
+</script>
 
 </html>

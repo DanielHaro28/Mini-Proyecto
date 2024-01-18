@@ -6,7 +6,7 @@ const path = require('path');
 
 const wss = new WebSocket.Server({ server:server });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 1235;
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/homepage.html'));
@@ -20,13 +20,20 @@ app.get('/index', function(req, res) {
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
-app.get('/index', function(req, res) {
-  res.sendFile(path.join(__dirname, '/juego.js'));
+app.get('/playername', function(req, res) {
+  res.sendFile(path.join(__dirname, '/playername.html'));
 });
 
-
 app.listen(port);
+
 console.log('Server started at http://localhost:' + port);
 
-//app.get('/.' ,(req, res) => res.send('Hello Word'));
-//server.listen(8080,() => console.log('escuchando en el puerto 8080'))
+wss.on('connection', function connection(wss) {
+  wss.on('message', function incoming(message) {
+    console.log('received: %s', message);
+
+    wss.send('something');
+  });
+});
+
+server.listen(8080,() => console.log('Socket escuchando puerto 8080'));

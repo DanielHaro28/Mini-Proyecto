@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<script src="/juego.js">
-</script>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +14,27 @@
         <div class="text-center">
             <p>Adivina la palabra</p>
             <p id="palabraResaltada">Palabra a adivinar va aqui</p>
-            <div id="teclado"></div>
+            <div id="keyboard"></div>
+            <button class="btn btn-info" onClick="reset()">Reiniciar</button>
         </div>
     </div>
     
 </body>
+<script type="text/javascript">
+    function generadorBotones() {
+    let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
+        `
+        <button 
+        class="btn btn-lg btn-primary m-2" 
+        id='` + letter + `' 
+        onClick="handleGuess('` + letter + `')"
+        >  
+        ` + letter + `
+        </button>  
+        `
+    ).join('');
+    document.getElementById('keyboard').innerHTML = buttonsHTML;
+    }
+    generadorBotones();
+</script>
 </html>
