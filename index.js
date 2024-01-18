@@ -28,11 +28,14 @@ app.listen(port);
 
 console.log('Server started at http://localhost:' + port);
 
+
+
 wss.on('connection', function connection(wss) {
   wss.on('message', function incoming(message) {
     console.log('received: %s', message);
 
     wss.send('something');
+    wss.id = message;
   });
 });
 
