@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>El Ahorcado</title>
 </head>
+
 <body>
     <div class="container">
         <h1 class="text-center">El Ahorcado</h1>
@@ -18,44 +20,184 @@
             <button class="btn btn-info" onClick="reset()">Reiniciar</button>
         </div>
     </div>
-    
+
 </body>
+<script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-    
+
+    const socket = io('http://localhost:4000');
+
     let answer = '';
-    let palabra = '';
+    let palabrau = '';
     let general = [];
+    let anfitrion = '';
+    let leusadas = [];
+    let leactual= '';
+    let usuario = 'pepito perez';
+
+    socket.on('palabra-recibir', (palabra, id) => {
+        palabrau = palabra;
+        anfitrion = id;
+        console.log(palabrau, anfitrion)
+        document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+        document.getElementById('maximosFallos').innerHTML = 6;
+        document.getElementById('a').disabled = false;
+        document.getElementById('b').disabled = false;
+        document.getElementById('c').disabled = false;
+        document.getElementById('d').disabled = false;
+        document.getElementById('e').disabled = false;
+        document.getElementById('f').disabled = false;
+        document.getElementById('g').disabled = false;
+        document.getElementById('h').disabled = false;
+        document.getElementById('i').disabled = false;
+        document.getElementById('j').disabled = false;
+        document.getElementById('k').disabled = false;
+        document.getElementById('l').disabled = false;
+        document.getElementById('m').disabled = false;
+        document.getElementById('n').disabled = false;
+        document.getElementById('ñ').disabled = false;
+        document.getElementById('o').disabled = false;
+        document.getElementById('p').disabled = false;
+        document.getElementById('q').disabled = false;
+        document.getElementById('r').disabled = false;
+        document.getElementById('s').disabled = false;
+        document.getElementById('t').disabled = false;
+        document.getElementById('u').disabled = false;
+        document.getElementById('v').disabled = false;
+        document.getElementById('w').disabled = false;
+        document.getElementById('x').disabled = false;
+        document.getElementById('y').disabled = false;
+        document.getElementById('z').disabled = false;
+    })
+
+    socket.on('respuesta-a-usuario', (respuesta) => {
+        if (respuesta == 1) {
+            general.indexOf(leactual) === -1 ? general.push(leactual) : null ;
+            console.log(respuesta);
+            if(palabrau.indexOf(leactual) >= 0){
+                document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+            }
+        } else if (respuesta == 0) {
+            console.log(respuesta);
+            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+        }
+
+        if (parseInt(document.getElementById('fallos').innerHTML) == 6) {
+            document.getElementById('a').disabled = true;
+            document.getElementById('b').disabled = true;
+            document.getElementById('c').disabled = true;
+            document.getElementById('d').disabled = true;
+            document.getElementById('e').disabled = true;
+            document.getElementById('f').disabled = true;
+            document.getElementById('g').disabled = true;
+            document.getElementById('h').disabled = true;
+            document.getElementById('i').disabled = true;
+            document.getElementById('j').disabled = true;
+            document.getElementById('k').disabled = true;
+            document.getElementById('l').disabled = true;
+            document.getElementById('m').disabled = true;
+            document.getElementById('n').disabled = true;
+            document.getElementById('ñ').disabled = true;
+            document.getElementById('o').disabled = true;
+            document.getElementById('p').disabled = true;
+            document.getElementById('q').disabled = true;
+            document.getElementById('r').disabled = true;
+            document.getElementById('s').disabled = true;
+            document.getElementById('t').disabled = true;
+            document.getElementById('u').disabled = true;
+            document.getElementById('v').disabled = true;
+            document.getElementById('w').disabled = true;
+            document.getElementById('x').disabled = true;
+            document.getElementById('y').disabled = true;
+            document.getElementById('z').disabled = true;
+        }
+
+        document.getElementById('a').disabled = false;
+        document.getElementById('b').disabled = false;
+        document.getElementById('c').disabled = false;
+        document.getElementById('d').disabled = false;
+        document.getElementById('e').disabled = false;
+        document.getElementById('f').disabled = false;
+        document.getElementById('g').disabled = false;
+        document.getElementById('h').disabled = false;
+        document.getElementById('i').disabled = false;
+        document.getElementById('j').disabled = false;
+        document.getElementById('k').disabled = false;
+        document.getElementById('l').disabled = false;
+        document.getElementById('m').disabled = false;
+        document.getElementById('n').disabled = false;
+        document.getElementById('ñ').disabled = false;
+        document.getElementById('o').disabled = false;
+        document.getElementById('p').disabled = false;
+        document.getElementById('q').disabled = false;
+        document.getElementById('r').disabled = false;
+        document.getElementById('s').disabled = false;
+        document.getElementById('t').disabled = false;
+        document.getElementById('u').disabled = false;
+        document.getElementById('v').disabled = false;
+        document.getElementById('w').disabled = false;
+        document.getElementById('x').disabled = false;
+        document.getElementById('y').disabled = false;
+        document.getElementById('z').disabled = false;
+        for (let i = 0; i < leusadas.length; i++) {
+            document.getElementById(leusadas[i]).disabled = true;
+        }
+
+    })
 
     function generadorBotones() {
-    let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
-        `
+        let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
+            `
         <button 
         class="btn btn-lg btn-primary m-2" 
-        id='` + letter + `' 
+        id='` + letter + `'
+        name="btn letras" 
         onClick="handleGuess('` + letter + `')"
+        disabled="true"
         >  
         ` + letter + `
         </button>  
         `
-    ).join('');
-    document.getElementById('keyboard').innerHTML = buttonsHTML;
+        ).join('');
+        document.getElementById('keyboard').innerHTML = buttonsHTML;
     }
 
-    function generadorPalabra() {
-        fetch('https://pow-3bae6d63ret5.deno.dev/word')
-        .then(res => res.json())
-        .then(json => {
-            palabra = json.word;
-            document.getElementById('palabraResaltada').innerHTML = palabra.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-        })
-    }
-
-    function manejoLetra(){
-
+    function handleGuess(letraEscogida) {
+        document.getElementById(letraEscogida).setAttribute('disabled', true);
+        leusadas.push(letraEscogida);
+        leactual = letraEscogida;
+        socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
+        document.getElementById('a').disabled = true;
+        document.getElementById('b').disabled = true;
+        document.getElementById('c').disabled = true;
+        document.getElementById('d').disabled = true;
+        document.getElementById('e').disabled = true;
+        document.getElementById('f').disabled = true;
+        document.getElementById('g').disabled = true;
+        document.getElementById('h').disabled = true;
+        document.getElementById('i').disabled = true;
+        document.getElementById('j').disabled = true;
+        document.getElementById('k').disabled = true;
+        document.getElementById('l').disabled = true;
+        document.getElementById('m').disabled = true;
+        document.getElementById('n').disabled = true;
+        document.getElementById('ñ').disabled = true;
+        document.getElementById('o').disabled = true;
+        document.getElementById('p').disabled = true;
+        document.getElementById('q').disabled = true;
+        document.getElementById('r').disabled = true;
+        document.getElementById('s').disabled = true;
+        document.getElementById('t').disabled = true;
+        document.getElementById('u').disabled = true;
+        document.getElementById('v').disabled = true;
+        document.getElementById('w').disabled = true;
+        document.getElementById('x').disabled = true;
+        document.getElementById('y').disabled = true;
+        document.getElementById('z').disabled = true;
     }
 
     generadorBotones();
-    generadorPalabra();
 
 </script>
+
 </html>

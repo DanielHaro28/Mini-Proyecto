@@ -15,7 +15,9 @@
             <p id="palabra"></p>
             <button id="otraPalabra">Nueva palabra</button>
             <p id="palabraRandom"></p>
-            <button id="Aceptar">Aceptar</button>            
+            <button id="Aceptar">Aceptar</button>
+            <button id="Buena" disabled="true" onclick="buena()">Buena</button>   
+            <button id="Mala" disabled ="true" onclick="mala()">Mala</button>               
         </div>
 
         
@@ -92,10 +94,31 @@
         background-color: deepskyblue;
         color: black;
     }
-</style>
-<script>
 
-    const socket = new WebSocket("ws://localhost:8080");
+    button:disabled {
+        background-color: rgba(240, 200, 200, 0.212);
+        color: black;
+    }
+</style>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var id = '';
+    let idjuga = '';
+    let usu = '';
+    const socket = io('http://localhost:4000');
+
+    socket.on('connect', () => {
+        console.log('You are connected with socket id: ' + socket.id);
+        id = socket.id;
+        console.log(id);
+        socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) =>{
+            console.log(letra, idjugador, usuario);
+            idjuga = idjugador;
+            usu = usuario;
+            document.getElementById('Buena').disabled = false;
+            document.getElementById('Mala').disabled = false;
+        })
+    })
 
     document.getElementById('otraPalabra').addEventListener('click', () => {
         fetch('https://pow-3bae6d63ret5.deno.dev/word')
@@ -106,12 +129,23 @@
     })
 
     document.getElementById('Aceptar').addEventListener('click', () => {
-        socket.send(document.getElementById('palabraRandom').innerHTML);
+        socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML , id);
+        document.getElementById('Aceptar').disabled = true;
+        document.getElementById('otraPalabra').disabled = true;
+
     })
 
-    socket.addEventListener('open', () => {
-        console.log('Conectado al servidor');
-    })
+    function buena(){
+        socket.emit('respuesta-anfitrion',  1 , idjuga);
+        document.getElementById('Buena').disabled = true;
+        document.getElementById('Mala').disabled = true;
+    }
+
+    function mala(){
+        socket.emit('respuesta-anfitrion',  0 , idjuga);
+        document.getElementById('Buena').disabled = true;
+        document.getElementById('Mala').disabled = true;
+    }
 
 </script>
 </html>

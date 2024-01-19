@@ -1,19 +1,41 @@
 const express = require('express')
+const path = require('path')
 const app = express()
-const server = require('http').createServer(app);
-const WebSocket = require('ws');
-const path = require('path');
-const io = require('socket.io')(8080)
+const port = process.env.PORT || 4000
+const server = app.listen(port, () => console.log(`Listening on port ${port}`))
 
-io.on('connection', function(socket){
-  console.log(socket.id)  
+var anfitrion = '';
+
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+  }
 });
 
-const wss = new WebSocket.Server({ server:server });
 
- var Clients = [];
+io.on('connection', (socket) => {
+  console.log(socket.id)
 
-const port = process.env.PORT || 1235;
+  socket.on('enviar-palabra-todos', (palabra, id) => {
+    console.log( palabra, id )
+    anfitrion = id;
+    console.log( palabra, anfitrion )
+    socket.broadcast.emit('palabra-recibir', palabra, id)
+  })
+
+  socket.on('letra-enviada', (letra, idjugador, usuario) => {
+    console.log(letra, idjugador, usuario)
+    socket.to(anfitrion).emit('letra-recibida-anfitrion', letra, idjugador, usuario)
+  })
+
+  socket.on('respuesta-anfitrion', (respuesta, idjuga) => {
+    console.log(respuesta, idjuga)
+    socket.to(idjuga).emit('respuesta-a-usuario', respuesta)
+  });
+
+});   
+
+app.use(express.static(path.join(__dirname + '/public')));
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/homepage.html'));
@@ -34,29 +56,3 @@ app.get('/playername', function(req, res) {
 app.get('/admingame', function(req, res) {
   res.sendFile(path.join(__dirname, '/admingame.html'));
 });
-
-app.listen(port);
-
-console.log('Server started at http://localhost:' + port);
-
-
-
-wss.on('connection', function connection(wss) {
-     Clients.push(wss);
-     for( let i = 0 ; i < Clients.length ; i++){
-      console.log("Yo soy el numero:" + Clients[i] + "y estoy en la posición  " +  i)
-    }
-
-     wss.on('message', function incoming(message) {
-      if (message != "start") {
-        for (var i in Clients) {
-          Clients[i].send(message);
-        }
-      }
-
-    });
-});
-
-
-
-server.listen(8080,() => console.log('Socket escuchando puerto 8080'));
