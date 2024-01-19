@@ -37,9 +37,10 @@ console.log('Server started at http://localhost:' + port);
 
 
 wss.on('connection', function connection(wss) {
-
-     id = Math.random();
-     Clients[id] = wss;
+     Clients.push(wss);
+     for( let i = 0 ; i < Clients.length ; i++){
+      console.log("Yo soy el numero:" + Clients[i] + "y estoy en la posición  " +  i)
+    }
 
      wss.on('message', function incoming(message) {
       if (message != "start") {
