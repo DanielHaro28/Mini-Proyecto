@@ -12,10 +12,13 @@
         <h1>Game Admin Room</h1>
         <div class="btn-box">
             <p id="palabraSeleccionada"></p>
-            <p id="palabra"></p>    
-
-            
+            <p id="palabra"></p>
+            <button id="otraPalabra">Nueva palabra</button>
+            <p id="palabraRandom"></p>
+            <button id="Aceptar">Aceptar</button>            
         </div>
+
+        
     </div>
 </body>
 <style>
@@ -29,6 +32,29 @@
         font-family: sans-serif;
         background-color: aquamarine;
         text-align: center;
+    }
+
+    .claseSeleccionada {
+        background-color: red;
+    }
+
+    #OtraPalabra, #Aceptar {
+        width: 100px;
+        height: 55px;
+        border-radius: 6px;
+        border-style: solid;
+        margin: auto;
+        text-align: center;
+        align-items: left;
+        cursor: pointer;
+        font-size: 15px;
+        background-color: blue;
+        color: white;
+    }
+
+    p {
+        font-size: 20px;
+        text-align: auto;
     }
 
     .fondo {
@@ -67,5 +93,25 @@
         color: black;
     }
 </style>
+<script>
 
+    const socket = new WebSocket("ws://localhost:8080");
+
+    document.getElementById('otraPalabra').addEventListener('click', () => {
+        fetch('https://pow-3bae6d63ret5.deno.dev/word')
+            .then(res => res.json())
+            .then(json => {
+                document.getElementById('palabraRandom').innerHTML = json.word;
+            })
+    })
+
+    document.getElementById('Aceptar').addEventListener('click', () => {
+        socket.send(document.getElementById('palabraRandom').innerHTML);
+    })
+
+    socket.addEventListener('open', () => {
+        console.log('Conectado al servidor');
+    })
+
+</script>
 </html>
