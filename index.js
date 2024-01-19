@@ -24,6 +24,10 @@ app.get('/playername', function(req, res) {
   res.sendFile(path.join(__dirname, '/playername.html'));
 });
 
+app.get('/admingame', function(req, res) {
+  res.sendFile(path.join(__dirname, '/admingame.html'));
+});
+
 app.listen(port);
 
 console.log('Server started at http://localhost:' + port);
@@ -36,6 +40,7 @@ wss.on('connection', function connection(wss) {
 
     wss.send('something');
     wss.id = message;
+    wss.id.send()
   });
 });
 

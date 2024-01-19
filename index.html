@@ -13,7 +13,7 @@
         <div class="float-right">Intentos fallidos<span id="fallos">0</span> of <span id="maximosFallos"></span></div>
         <div class="text-center">
             <p>Adivina la palabra</p>
-            <p id="palabraResaltada">Palabra a adivinar va aqui</p>
+            <p id="palabraResaltada"></p>
             <div id="keyboard"></div>
             <button class="btn btn-info" onClick="reset()">Reiniciar</button>
         </div>
@@ -21,6 +21,11 @@
     
 </body>
 <script type="text/javascript">
+    
+    let answer = '';
+    let palabra = '';
+    let general = [];
+
     function generadorBotones() {
     let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
         `
@@ -35,6 +40,18 @@
     ).join('');
     document.getElementById('keyboard').innerHTML = buttonsHTML;
     }
+
+    function generadorPalabra() {
+        fetch('https://pow-3bae6d63ret5.deno.dev/word')
+        .then(res => res.json())
+        .then(json => {
+            palabra = json.word;
+            document.getElementById('palabraResaltada').innerHTML = palabra.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+        })
+    }
+
     generadorBotones();
+    generadorPalabra();
+
 </script>
 </html>
