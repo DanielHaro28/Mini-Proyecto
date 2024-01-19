@@ -3,6 +3,11 @@ const app = express()
 const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const path = require('path');
+const io = require('socket.io')(8080)
+
+io.on('connection', function(socket){
+  console.log(socket.id)  
+});
 
 const wss = new WebSocket.Server({ server:server });
 
