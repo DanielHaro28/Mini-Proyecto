@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
     <title>El Ahorcado</title>
 </head>
 
@@ -17,6 +17,7 @@
         <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
         <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span></div>
         <div class="text-center">
+            <img id='hangmanPic' src="./images/0.jpg" alt="">
             <p>Adivina la palabra</p>
             <p id="palabraResaltada"></p>
             <div id="keyboard"></div>
@@ -70,6 +71,11 @@
         location.reload();
     }
 
+    function perdida(){
+        alert('Perdiste, la palabra era: ' + palabrau);
+        document.getElementById('jugarNuevo').style.visibility = 'visible';
+    }
+
     socket.on('ganador-a-todos', (usuario)=>{
         alert('El ganador es: ' + usuario);
         for(let i = 0; i < todosletras.length; i++){
@@ -85,25 +91,43 @@
             }
         } else if (respuesta == 0) {
             document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+            switch (parseInt(document.getElementById('fallos').innerHTML)) {
+                case 1:
+                    document.getElementById('hangmanPic').src = './images/1.jpg';
+                    break;
+                case 2:
+                    document.getElementById('hangmanPic').src = './images/2.jpg';
+                    break;
+                case 3:
+                    document.getElementById('hangmanPic').src = './images/3.jpg';
+                    break;
+                case 4:
+                    document.getElementById('hangmanPic').src = './images/4.jpg';
+                    break;
+                case 5:
+                    document.getElementById('hangmanPic').src = './images/5.jpg';
+                    break;
+                case 6:
+                    document.getElementById('hangmanPic').src = './images/6.jpg';
+                    break;
+                default:
+                    break;
+            }
+        }     
+        ganar();
+        for(let i = 0; i < todosletras.length; i++){
+            document.getElementById(todosletras[i]).disabled = false;
         }
-
-        if (parseInt(document.getElementById('fallos').innerHTML) == 6) {
+        for (let i = 0; i < leusadas.length; i++) {
+            document.getElementById(leusadas[i]).disabled = true;
+        }       
+        if (parseInt(document.getElementById('fallos').innerHTML) >= 6) {
             for(let i = 0; i < todosletras.length; i++){
             document.getElementById(todosletras[i]).disabled = true;
             }
             socket.emit('perdedor', usuario);
-            
+            perdida();
         }
-        ganar();
-
-        for(let i = 0; i < todosletras.length; i++){
-            document.getElementById(todosletras[i]).disabled = false;
-        }
-
-        for (let i = 0; i < leusadas.length; i++) {
-            document.getElementById(leusadas[i]).disabled = true;
-        }
-
     })
 
     function generadorBotones() {
@@ -123,17 +147,10 @@
         document.getElementById('keyboard').innerHTML = buttonsHTML;
     }
 
-    function status(){
-        socket.emit('partida-empezada', (Response)=>{
-            console.log(Response);
-            partida = Response;
-            console.log(partida);
-        });
-    }
-
     function handleGuess(letraEscogida) {
-        status();
-
+        socket.emit('partida-empezada', (Response)=>{
+            partida = Response;
+        });
         if( partida == false ){
             alert('Espera a que el anfitrion empiece la partida');
         }else if( partida == true && document.getElementById('palabraResaltada').innerHTML == '' ){
@@ -146,8 +163,7 @@
             for(let i = 0; i < todosletras.length; i++){
                 document.getElementById(todosletras[i]).disabled = true;
             }
-        }
-        
+        }        
     }
 
     generadorBotones();
