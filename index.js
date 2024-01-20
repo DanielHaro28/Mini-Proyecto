@@ -5,6 +5,7 @@ const port = process.env.PORT || 4000
 const server = app.listen(port, () => console.log(`Listening on port ${port}`))
 
 var anfitrion = '';
+let partidaEmpezada = false;
 
 const io = require('socket.io')(server, {
   cors: {
@@ -14,26 +15,34 @@ const io = require('socket.io')(server, {
 
 
 io.on('connection', (socket) => {
-  console.log(socket.id)
 
   socket.on('enviar-palabra-todos', (palabra, id) => {
-    console.log( palabra, id )
     anfitrion = id;
-    console.log( palabra, anfitrion )
+    partidaEmpezada = true;
     socket.broadcast.emit('palabra-recibir', palabra, id)
-  })
+  });
 
   socket.on('letra-enviada', (letra, idjugador, usuario) => {
-    console.log(letra, idjugador, usuario)
     socket.to(anfitrion).emit('letra-recibida-anfitrion', letra, idjugador, usuario)
-  })
+  });
 
   socket.on('respuesta-anfitrion', (respuesta, idjuga) => {
-    console.log(respuesta, idjuga)
     socket.to(idjuga).emit('respuesta-a-usuario', respuesta)
   });
 
-});   
+  socket.on('ganador', (usuario) =>{
+    socket.broadcast.emit('ganador-a-todos', usuario)
+  });
+
+  socket.on('perdedor', (usuario) =>{
+    socket.to(anfitrion).emit('perdedor-a-anfitrion', usuario)
+  });
+  
+  socket.on('partida-empezada',(callback)=>{
+    callback( partidaEmpezada )
+  })
+
+});
 
 app.use(express.static(path.join(__dirname + '/public')));
 

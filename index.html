@@ -12,13 +12,16 @@
 <body>
     <div class="container">
         <h1 class="text-center">El Ahorcado</h1>
-        <div class="float-right">Intentos fallidos<span id="fallos">0</span> of <span id="maximosFallos"></span></div>
+        <label for="campoNombre" id="nombreusuario">Ingrese su usuario</label>
+        <input type="text" id="campoNombre"/>        
+        <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
+        <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span></div>
         <div class="text-center">
             <p>Adivina la palabra</p>
             <p id="palabraResaltada"></p>
             <div id="keyboard"></div>
-            <button class="btn btn-info" onClick="reset()">Reiniciar</button>
         </div>
+        <button id="jugarNuevo"  style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
     </div>
 
 </body>
@@ -31,8 +34,10 @@
     let palabrau = '';
     let general = [];
     let anfitrion = '';
+    let todosletras = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','ñ','o','p','q','r','s','t','u','v','w','x','y','z'];
     let leusadas = [];
     let leactual= '';
+    let partida = false;
     let usuario = 'pepito perez';
 
     socket.on('palabra-recibir', (palabra, id) => {
@@ -40,105 +45,61 @@
         anfitrion = id;
         console.log(palabrau, anfitrion)
         document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-        document.getElementById('maximosFallos').innerHTML = 6;
-        document.getElementById('a').disabled = false;
-        document.getElementById('b').disabled = false;
-        document.getElementById('c').disabled = false;
-        document.getElementById('d').disabled = false;
-        document.getElementById('e').disabled = false;
-        document.getElementById('f').disabled = false;
-        document.getElementById('g').disabled = false;
-        document.getElementById('h').disabled = false;
-        document.getElementById('i').disabled = false;
-        document.getElementById('j').disabled = false;
-        document.getElementById('k').disabled = false;
-        document.getElementById('l').disabled = false;
-        document.getElementById('m').disabled = false;
-        document.getElementById('n').disabled = false;
-        document.getElementById('ñ').disabled = false;
-        document.getElementById('o').disabled = false;
-        document.getElementById('p').disabled = false;
-        document.getElementById('q').disabled = false;
-        document.getElementById('r').disabled = false;
-        document.getElementById('s').disabled = false;
-        document.getElementById('t').disabled = false;
-        document.getElementById('u').disabled = false;
-        document.getElementById('v').disabled = false;
-        document.getElementById('w').disabled = false;
-        document.getElementById('x').disabled = false;
-        document.getElementById('y').disabled = false;
-        document.getElementById('z').disabled = false;
+        document.getElementById('maximosFallos').innerHTML = 6;      
+    })
+
+    function ganar(){
+        if(document.getElementById('palabraResaltada').innerHTML.indexOf('_') == -1){
+            alert('Ganaste, Felicitaciones');
+            socket.emit('ganador', usuario);
+            document.getElementById('jugarNuevo').style.visibility = 'visible';
+        }
+    }
+
+    function nombre(){
+        usuario = document.getElementById('campoNombre').value;
+        for(let i = 0; i < todosletras.length; i++){
+            document.getElementById(todosletras[i]).disabled = false;            
+        }
+        document.getElementById('campoNombre').style.visibility = 'hidden';
+        document.getElementById('aceptarNombre').style.visibility = 'hidden';
+        document.getElementById('nombreusuario').style.visibility = 'hidden';
+    }
+
+    reiniciar = () => {
+        location.reload();
+    }
+
+    socket.on('ganador-a-todos', (usuario)=>{
+        alert('El ganador es: ' + usuario);
+        for(let i = 0; i < todosletras.length; i++){
+            document.getElementById(todosletras[i]).disabled = false;
+        }
     })
 
     socket.on('respuesta-a-usuario', (respuesta) => {
         if (respuesta == 1) {
             general.indexOf(leactual) === -1 ? general.push(leactual) : null ;
-            console.log(respuesta);
             if(palabrau.indexOf(leactual) >= 0){
                 document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
         } else if (respuesta == 0) {
-            console.log(respuesta);
             document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
         }
 
         if (parseInt(document.getElementById('fallos').innerHTML) == 6) {
-            document.getElementById('a').disabled = true;
-            document.getElementById('b').disabled = true;
-            document.getElementById('c').disabled = true;
-            document.getElementById('d').disabled = true;
-            document.getElementById('e').disabled = true;
-            document.getElementById('f').disabled = true;
-            document.getElementById('g').disabled = true;
-            document.getElementById('h').disabled = true;
-            document.getElementById('i').disabled = true;
-            document.getElementById('j').disabled = true;
-            document.getElementById('k').disabled = true;
-            document.getElementById('l').disabled = true;
-            document.getElementById('m').disabled = true;
-            document.getElementById('n').disabled = true;
-            document.getElementById('ñ').disabled = true;
-            document.getElementById('o').disabled = true;
-            document.getElementById('p').disabled = true;
-            document.getElementById('q').disabled = true;
-            document.getElementById('r').disabled = true;
-            document.getElementById('s').disabled = true;
-            document.getElementById('t').disabled = true;
-            document.getElementById('u').disabled = true;
-            document.getElementById('v').disabled = true;
-            document.getElementById('w').disabled = true;
-            document.getElementById('x').disabled = true;
-            document.getElementById('y').disabled = true;
-            document.getElementById('z').disabled = true;
+            for(let i = 0; i < todosletras.length; i++){
+            document.getElementById(todosletras[i]).disabled = true;
+            }
+            socket.emit('perdedor', usuario);
+            
+        }
+        ganar();
+
+        for(let i = 0; i < todosletras.length; i++){
+            document.getElementById(todosletras[i]).disabled = false;
         }
 
-        document.getElementById('a').disabled = false;
-        document.getElementById('b').disabled = false;
-        document.getElementById('c').disabled = false;
-        document.getElementById('d').disabled = false;
-        document.getElementById('e').disabled = false;
-        document.getElementById('f').disabled = false;
-        document.getElementById('g').disabled = false;
-        document.getElementById('h').disabled = false;
-        document.getElementById('i').disabled = false;
-        document.getElementById('j').disabled = false;
-        document.getElementById('k').disabled = false;
-        document.getElementById('l').disabled = false;
-        document.getElementById('m').disabled = false;
-        document.getElementById('n').disabled = false;
-        document.getElementById('ñ').disabled = false;
-        document.getElementById('o').disabled = false;
-        document.getElementById('p').disabled = false;
-        document.getElementById('q').disabled = false;
-        document.getElementById('r').disabled = false;
-        document.getElementById('s').disabled = false;
-        document.getElementById('t').disabled = false;
-        document.getElementById('u').disabled = false;
-        document.getElementById('v').disabled = false;
-        document.getElementById('w').disabled = false;
-        document.getElementById('x').disabled = false;
-        document.getElementById('y').disabled = false;
-        document.getElementById('z').disabled = false;
         for (let i = 0; i < leusadas.length; i++) {
             document.getElementById(leusadas[i]).disabled = true;
         }
@@ -162,38 +123,31 @@
         document.getElementById('keyboard').innerHTML = buttonsHTML;
     }
 
+    function status(){
+        socket.emit('partida-empezada', (Response)=>{
+            console.log(Response);
+            partida = Response;
+            console.log(partida);
+        });
+    }
+
     function handleGuess(letraEscogida) {
-        document.getElementById(letraEscogida).setAttribute('disabled', true);
-        leusadas.push(letraEscogida);
-        leactual = letraEscogida;
-        socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
-        document.getElementById('a').disabled = true;
-        document.getElementById('b').disabled = true;
-        document.getElementById('c').disabled = true;
-        document.getElementById('d').disabled = true;
-        document.getElementById('e').disabled = true;
-        document.getElementById('f').disabled = true;
-        document.getElementById('g').disabled = true;
-        document.getElementById('h').disabled = true;
-        document.getElementById('i').disabled = true;
-        document.getElementById('j').disabled = true;
-        document.getElementById('k').disabled = true;
-        document.getElementById('l').disabled = true;
-        document.getElementById('m').disabled = true;
-        document.getElementById('n').disabled = true;
-        document.getElementById('ñ').disabled = true;
-        document.getElementById('o').disabled = true;
-        document.getElementById('p').disabled = true;
-        document.getElementById('q').disabled = true;
-        document.getElementById('r').disabled = true;
-        document.getElementById('s').disabled = true;
-        document.getElementById('t').disabled = true;
-        document.getElementById('u').disabled = true;
-        document.getElementById('v').disabled = true;
-        document.getElementById('w').disabled = true;
-        document.getElementById('x').disabled = true;
-        document.getElementById('y').disabled = true;
-        document.getElementById('z').disabled = true;
+        status();
+
+        if( partida == false ){
+            alert('Espera a que el anfitrion empiece la partida');
+        }else if( partida == true && document.getElementById('palabraResaltada').innerHTML == '' ){
+            alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
+        }else{
+            document.getElementById(letraEscogida).setAttribute('disabled', true);
+            leusadas.push(letraEscogida);
+            leactual = letraEscogida;
+            socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
+            for(let i = 0; i < todosletras.length; i++){
+                document.getElementById(todosletras[i]).disabled = true;
+            }
+        }
+        
     }
 
     generadorBotones();
