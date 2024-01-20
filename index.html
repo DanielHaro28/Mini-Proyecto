@@ -13,7 +13,7 @@
     <div class="container">
         <h1 class="text-center">El Ahorcado</h1>
         <label for="campoNombre" id="nombreusuario">Ingrese su usuario</label>
-        <input type="text" id="campoNombre"/>        
+        <input type="text" id="campoNombre" />
         <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
         <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span></div>
         <div class="text-center">
@@ -22,10 +22,95 @@
             <p id="palabraResaltada"></p>
             <div id="keyboard"></div>
         </div>
-        <button id="jugarNuevo"  style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
+        <button id="jugarNuevo" style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
     </div>
 
 </body>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .float-right {
+        float: right;
+    }
+
+    #hangmanPic {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+
+    #keyboard {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    #keyboard button {
+        margin: 5px;
+        padding: 10px 20px;
+        background-color: #ccc;
+        color: #333;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #jugarNuevo {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
+
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
@@ -35,9 +120,9 @@
     let palabrau = '';
     let general = [];
     let anfitrion = '';
-    let todosletras = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','ñ','o','p','q','r','s','t','u','v','w','x','y','z'];
+    let todosletras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
     let leusadas = [];
-    let leactual= '';
+    let leactual = '';
     let partida = false;
     let usuario = 'pepito perez';
 
@@ -46,21 +131,21 @@
         anfitrion = id;
         console.log(palabrau, anfitrion)
         document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-        document.getElementById('maximosFallos').innerHTML = 6;      
+        document.getElementById('maximosFallos').innerHTML = 6;
     })
 
-    function ganar(){
-        if(document.getElementById('palabraResaltada').innerHTML.indexOf('_') == -1){
+    function ganar() {
+        if (document.getElementById('palabraResaltada').innerHTML.indexOf('_') == -1) {
             alert('Ganaste, Felicitaciones');
             socket.emit('ganador', usuario);
             document.getElementById('jugarNuevo').style.visibility = 'visible';
         }
     }
 
-    function nombre(){
+    function nombre() {
         usuario = document.getElementById('campoNombre').value;
-        for(let i = 0; i < todosletras.length; i++){
-            document.getElementById(todosletras[i]).disabled = false;            
+        for (let i = 0; i < todosletras.length; i++) {
+            document.getElementById(todosletras[i]).disabled = false;
         }
         document.getElementById('campoNombre').style.visibility = 'hidden';
         document.getElementById('aceptarNombre').style.visibility = 'hidden';
@@ -71,22 +156,22 @@
         location.reload();
     }
 
-    function perdida(){
+    function perdida() {
         alert('Perdiste, la palabra era: ' + palabrau);
         document.getElementById('jugarNuevo').style.visibility = 'visible';
     }
 
-    socket.on('ganador-a-todos', (usuario)=>{
+    socket.on('ganador-a-todos', (usuario) => {
         alert('El ganador es: ' + usuario);
-        for(let i = 0; i < todosletras.length; i++){
+        for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = false;
         }
     })
 
     socket.on('respuesta-a-usuario', (respuesta) => {
         if (respuesta == 1) {
-            general.indexOf(leactual) === -1 ? general.push(leactual) : null ;
-            if(palabrau.indexOf(leactual) >= 0){
+            general.indexOf(leactual) === -1 ? general.push(leactual) : null;
+            if (palabrau.indexOf(leactual) >= 0) {
                 document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
         } else if (respuesta == 0) {
@@ -113,17 +198,17 @@
                 default:
                     break;
             }
-        }     
+        }
         ganar();
-        for(let i = 0; i < todosletras.length; i++){
+        for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = false;
         }
         for (let i = 0; i < leusadas.length; i++) {
             document.getElementById(leusadas[i]).disabled = true;
-        }       
+        }
         if (parseInt(document.getElementById('fallos').innerHTML) >= 6) {
-            for(let i = 0; i < todosletras.length; i++){
-            document.getElementById(todosletras[i]).disabled = true;
+            for (let i = 0; i < todosletras.length; i++) {
+                document.getElementById(todosletras[i]).disabled = true;
             }
             socket.emit('perdedor', usuario);
             perdida();
@@ -148,22 +233,26 @@
     }
 
     function handleGuess(letraEscogida) {
-        socket.emit('partida-empezada', (Response)=>{
+        socket.emit('partida-empezada', (Response) => {
             partida = Response;
-        });
-        if( partida == false ){
-            alert('Espera a que el anfitrion empiece la partida');
-        }else if( partida == true && document.getElementById('palabraResaltada').innerHTML == '' ){
-            alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
-        }else{
-            document.getElementById(letraEscogida).setAttribute('disabled', true);
-            leusadas.push(letraEscogida);
-            leactual = letraEscogida;
-            socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
-            for(let i = 0; i < todosletras.length; i++){
-                document.getElementById(todosletras[i]).disabled = true;
+            if (partida == false) {
+                alert('Espera a que el anfitrion empiece la partida');
+            } else if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
+                alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
+            } else {
+                document.getElementById(letraEscogida).setAttribute('disabled', true);
+                leusadas.push(letraEscogida);
+                leactual = letraEscogida;
+                socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
+                for (let i = 0; i < todosletras.length; i++) {
+                    document.getElementById(todosletras[i]).disabled = true;
+                }
             }
-        }        
+        });
+    }
+
+    function status() {
+
     }
 
     generadorBotones();

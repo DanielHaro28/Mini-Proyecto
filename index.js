@@ -6,6 +6,7 @@ const server = app.listen(port, () => console.log(`Listening on port ${port}`))
 
 var anfitrion = '';
 let partidaEmpezada = false;
+let contadorjugadores = '';
 
 const io = require('socket.io')(server, {
   cors: {
@@ -15,10 +16,12 @@ const io = require('socket.io')(server, {
 
 
 io.on('connection', (socket) => {
-
+  contadorjugadores = io.engine.clientsCount;
+  console.log(contadorjugadores);
   socket.on('enviar-palabra-todos', (palabra, id) => {
     anfitrion = id;
     partidaEmpezada = true;
+    
     socket.broadcast.emit('palabra-recibir', palabra, id)
   });
 
