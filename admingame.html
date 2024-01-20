@@ -17,15 +17,16 @@
             <p id="palabraRandom"></p>
             <button id="Aceptar">Aceptar</button>
             <p id="usuario"></p>
-            <p id="letra"></p>  
-            <button id="Buena" disabled="true" onclick="buena()">Buena</button>   
-            <button id="Mala" disabled ="true" onclick="mala()">Mala</button>
-            <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>              
+            <p id="letra"></p>
+            <button id="Buena" disabled="true" onclick="buena()">Buena</button>
+            <button id="Mala" disabled="true" onclick="mala()">Mala</button>
+            <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>
         </div>
 
-        
+
     </div>
 </body>
+
 <style>
     * {
         margin: 0;
@@ -35,31 +36,8 @@
 
     body {
         font-family: sans-serif;
-        background-color: aquamarine;
+        background-color: black;
         text-align: center;
-    }
-
-    .claseSeleccionada {
-        background-color: red;
-    }
-
-    #OtraPalabra, #Aceptar {
-        width: 100px;
-        height: 55px;
-        border-radius: 6px;
-        border-style: solid;
-        margin: auto;
-        text-align: center;
-        align-items: left;
-        cursor: pointer;
-        font-size: 15px;
-        background-color: blue;
-        color: white;
-    }
-
-    p {
-        font-size: 20px;
-        text-align: auto;
     }
 
     .fondo {
@@ -72,19 +50,27 @@
         top: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        background-color: aqua;
+        background:linear-gradient(#e66465, #9198e5);
+        padding: 20px;
     }
 
     h1 {
         margin-top: 15px;
     }
 
+    .btn-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 30px;
+    }
+
     button {
-        width: 100px;
+        width: 150px;
         height: 55px;
         border-radius: 6px;
         border-style: solid;
-        margin-top: 30px;
+        margin-top: 10px;
         text-align: center;
         align-items: center;
         cursor: pointer;
@@ -96,6 +82,20 @@
     button:hover {
         background-color: deepskyblue;
         color: black;
+    }
+
+    p {
+        font-size: 20px;
+        text-align: auto;
+        margin-top: 10px;
+    }
+
+    #palabraSeleccionada {
+        font-weight: bold;
+    }
+
+    #palabraRandom {
+        font-style: italic;
     }
 
     button:disabled {
@@ -115,7 +115,7 @@
         console.log('You are connected with socket id: ' + socket.id);
         id = socket.id;
         console.log(id);
-        socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) =>{
+        socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
             console.log(letra, idjugador, usuario);
             idjuga = idjugador;
             document.getElementById('usuario').innerHTML = usuario;
@@ -125,16 +125,16 @@
         })
     })
 
-    socket.on('ganador-a-todos', (usuario)=>{
+    socket.on('ganador-a-todos', (usuario) => {
         alert('El ganador es: ' + usuario);
-        document.getElementById('Reiniciar').disabled = false;      
+        document.getElementById('Reiniciar').disabled = false;
     })
 
-    socket.on('perdedor-a-anfitrion', (usuario)=>{
+    socket.on('perdedor-a-anfitrion', (usuario) => {
         alert('El perdedor es: ' + usuario);
     });
 
-    function reiniciar(){
+    function reiniciar() {
         document.getElementById('Aceptar').disabled = false;
         document.getElementById('otraPalabra').disabled = false;
         document.getElementById('Buena').disabled = true;
@@ -145,7 +145,7 @@
     }
 
     function removeAccents(str) {
-            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
     document.getElementById('otraPalabra').addEventListener('click', () => {
@@ -160,23 +160,24 @@
 
 
     document.getElementById('Aceptar').addEventListener('click', () => {
-        socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML , id);
+        socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML, id);
         document.getElementById('Aceptar').disabled = true;
         document.getElementById('otraPalabra').disabled = true;
 
     })
 
-    function buena(){
-        socket.emit('respuesta-anfitrion',  1 , idjuga);
+    function buena() {
+        socket.emit('respuesta-anfitrion', 1, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
     }
 
-    function mala(){
-        socket.emit('respuesta-anfitrion',  0 , idjuga);
+    function mala() {
+        socket.emit('respuesta-anfitrion', 0, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
     }
 
 </script>
+
 </html>
