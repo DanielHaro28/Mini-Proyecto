@@ -105,16 +105,15 @@
 </style>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    var id = '';
+    let id = '';
     let idjuga = '';
     let usu = '';
     const socket = io('http://localhost:4000');
     let pa = '';
 
     socket.on('connect', () => {
-        console.log('You are connected with socket id: ' + socket.id);
         id = socket.id;
-        console.log(id);
+
         socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
             console.log(letra, idjugador, usuario);
             idjuga = idjugador;
