@@ -266,117 +266,111 @@
 <script type="text/javascript">
 
     const socket = io('http://localhost:4000');
-
-    let answer = '';
     let respuestaGeneral = true;
-    let nIntervId = '';
-    let palabrau = '';
+    let palabraElegida = '';
     let general = [];
     let anfitrion = '';
     let todosletras = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-    let leusadas = [];
-    let leactual = '';
-    let partida = false;
+    let letrasUsadas = [];
+    let letraActual = '';
+    let estadoPartida = false;
     let usuario = '';
-    document.getElementById('sidebar-left').style.pointerEvents = 'none';
 
+    //Funcion que busca el estado de la partida en el servidor
     function status() {
-        socket.emit('partida-empezada', (Response) => {
+        //Se envia una peticion al servidor para saber si la partida ya empezo
+        socket.emit('partida-empezada', (Response) => {         
             if (Response == true) {
+                //Si la partida ya empezo se muestra un mensaje de que la partida ya empezo
                 document.getElementById('statusP').innerHTML = 'Partida Iniciada';
-                document.getElementById('statusP').style.color = 'red';
-            } else {
+                document.getElementById('statusP').style.color = 'red';      
+            } else { 
+                //Si la partida no ha empezado se muestra un mensaje de que la partida no ha empezado 
                 document.getElementById('statusP').innerHTML = 'Esperando jugadores para empezar la partida';
                 document.getElementById('statusP').style.color = 'green';
             }
         });
     }
 
+    //Evento de conexion que se ejecuta cuando el cliente recibe la palabra del servidor y la muestra en pantalla
     socket.on('palabra-recibir', (palabra, id) => {
-        palabrau = palabra;
+        //Se le asigna la palabra recibida a la variable palabraElegida y id a la variable anfitrion
+        palabraElegida = palabra;
         anfitrion = id;
-        document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+        //Se agarra la palabra elegida y se convierte en un array de letras para despues convertirla en un array de guiones bajos y se muestra en pantalla
+        document.getElementById('palabraResaltada').innerHTML = palabraElegida.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
         document.getElementById('maximosFallos').innerHTML = 6;
+        //Se llama a la funcion que habilitan los botones de las letras
         habilitarletras();
+        //Se llama a la funcion que busca el estadop de la partida
         status();
     })
 
+    //Funcion que sirve para saber si el usuario gano la partida
     function ganar() {
+        //Se busca si en la palabra resaltada hay guiones bajos, si no hay guiones bajos significa que el usuario gano la partida
         if (document.getElementById('palabraResaltada').innerHTML.indexOf('_') == -1) {
+            //Se muestra un mensaje de que el usuario gano la partida
             alert('Ganaste, Felicitaciones');
+            //Se envia un mensaje al servidor de que el usuario gano la partida
             socket.emit('ganador', usuario);
+            //Se habilita el boton de jugar de nuevo
             document.getElementById('jugarNuevo').style.visibility = 'visible';
         }
     }
 
-    function espera() {
-        nIntervId = setInterval(() => {
-            if (respuestaGeneral == false) {
-                document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
-                switch (parseInt(document.getElementById('fallos').innerHTML)) {
-                    case 1:
-                        document.getElementById('hangmanPic').src = './images/1.jpg';
-                        break;
-                    case 2:
-                        document.getElementById('hangmanPic').src = './images/2.jpg';
-                        break;
-                    case 3:
-                        document.getElementById('hangmanPic').src = './images/3.jpg';
-                        break;
-                    case 4:
-                        document.getElementById('hangmanPic').src = './images/4.jpg';
-                        break;
-                    case 5:
-                        document.getElementById('hangmanPic').src = './images/5.jpg';
-                        break;
-                    case 6:
-                        document.getElementById('hangmanPic').src = './images/6.jpg';
-                        break;
-                    default:
-                        break;
-                }
-            }
-            clearInterval(nIntervId);
-        }, 30000);
-    }
-
+    //Funcion que se usa cuando el usuario elegue su apodo
     function nombre() {
+        //Se emite un mensaje al servidor para saber si la partida ya empezo y se espera una respuesta
         socket.emit('partida-empezada', (Response) => {
-            partida = Response;
-            if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
+            //Se le asigna la respuesta a la variable estadoPartida
+            estadoPartida = Response;
+            //Si la partida ya empezo y el usuario no ha elegido su apodo se muestra un mensaje de que la partida ya empezo y que 
+            //espere a que el anfitrion empieze una nueva partida
+            if (estadoPartida == true && document.getElementById('palabraResaltada').innerHTML == '') {
                 alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
             } else {
+                //Si la partida no ha empezado y el usuario no ha elegido su apodo se muestra un mensaje de que el usuario no ha elegido su apodo
                 if (document.getElementById('campoNombre').value == '') {
                     alert('Ingrese un nombre de usuario');
                     return;
+                //Si la partida no ha empezado y el usuario ya eligio su apodo se le asigna el apodo a la variable usuario y se ocultan los elementos de elegir apodo    
                 } else {
                     usuario = document.getElementById('campoNombre').value;
                     document.getElementById('campoNombre').style.visibility = 'hidden';
                     document.getElementById('aceptarNombre').style.visibility = 'hidden';
                     document.getElementById('nombreusuario').style.visibility = 'hidden';
+                    //Se emite un mensaje al servidor para iniciar el proceso de registro de usuario en el servidor
                     socket.emit('registro-usuario', socket.id);
                 }
             }
         });
     }
 
-
-
+    //Funcion que se ejecuta cuando el usuario presiona el click en el boton de volver a jugar se reinicia la pagina
     reiniciar = () => {
         location.reload();
     }
 
+    //Funcion que se ejecuta cuando el usuario pierde la partida
     function perdida() {
-        alert('Perdiste, la palabra era: ' + palabrau);
+        //Se muestra un mensaje de que el usuario perdio la partida
+        alert('Perdiste, la palabra era: ' + palabraElegida);
+        //Se habilita el boton de jugar de nuevo
         document.getElementById('jugarNuevo').style.visibility = 'visible';
     }
 
+    //Evento que se ejecuta cuando el jugador recibe del servidor alguien que gano la partida
     socket.on('ganador-a-todos', (usuario) => {
+        //Se muestra un mensaje de que el usuario gano la partida
         alert('El ganador es: ' + usuario);
+        //Se deshabilitan los botones de las letras
         quitarletras();
+        //Se habilita el boton de jugar de nuevo
         document.getElementById('jugarNuevo').style.visibility = 'visible';
     })
 
+    //
     socket.on('jugador-actual', (usuarioS) => {
         if (usuarioS == usuario) {
             document.getElementById('turnoUsuario').innerHTML = 'Tu turno';
@@ -386,8 +380,8 @@
     })
 
     function quitarLetrasUsadas() {
-        for (let i = 0; i < leusadas.length; i++) {
-            document.getElementById(leusadas[i]).disabled = true;
+        for (let i = 0; i < letrasUsadas.length; i++) {
+            document.getElementById(letrasUsadas[i]).disabled = true;
         }
     }
 
@@ -406,9 +400,9 @@
     socket.on('respuesta-a-usuario', (respuesta) => {
         respuestaGeneral = true;
         if (respuesta == true) {
-            general.indexOf(leactual) === -1 ? general.push(leactual) : null;
-            if (palabrau.indexOf(leactual) >= 0) {
-                document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+            general.indexOf(letraActual) === -1 ? general.push(letraActual) : null;
+            if (palabraElegida.indexOf(letraActual) >= 0) {
+                document.getElementById('palabraResaltada').innerHTML = palabraElegida.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
         } else if (respuesta == false) {
             document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 6;
@@ -475,8 +469,8 @@
     function handleGuess(letraEscogida) {
         respuestaGeneral = false;
         document.getElementById(letraEscogida).setAttribute('disabled', true);
-        leusadas.push(letraEscogida);
-        leactual = letraEscogida;
+        letrasUsadas.push(letraEscogida);
+        letraActual = letraEscogida;
         socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
         for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = true;
