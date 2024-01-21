@@ -10,7 +10,6 @@ let partidaEmpezada = false;
 let playercont = '';
 let playerList = [];
 let playerstatus = [];
-let usuario = '';
 let connecstatus = false;
 
 const io = require('socket.io')(server, {
@@ -37,6 +36,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('ganador', (usuario) => {
+    partidaEmpezada = false;
+    playerList = [];
+    playerstatus = [];
     socket.broadcast.emit('ganador-a-todos', usuario)
   });
 
@@ -44,6 +46,8 @@ io.on('connection', (socket) => {
     playercont--;
     if(playercont == 0){
       partidaEmpezada = false;
+      playerList = [];
+      playerstatus = [];
       socket.to(anfitrion).emit('partida-terminada', usuario)
     }
     socket.to(anfitrion).emit('perdedor-a-anfitrion', usuario)

@@ -14,16 +14,15 @@
             <p id="palabraSeleccionada"></p>
             <p id="palabra"></p>
             <button id="otraPalabra">Nueva palabra</button>
-            <p id="palabraRandom"></p>
+            <p>Palabra: <span id="palabraRandom">palabra</span></p>
             <button id="Aceptar">Aceptar</button>
-            <p id="usuario"></p>
-            <p id="letra"></p>
+            <p>Usuario: <span id="usuario">usu</span></p>
+            <p>Letra: <span id="letra">letra</span></p>
+            <button id="siguiente" onclick="siguiente()">Siguiente Letra</button>
             <button id="Buena" disabled="true" onclick="buena()">Buena</button>
-            <button id="Mala" disabled="true" onclick="mala()">Mala</button>
+            <button id="Mala" disabled="true" onclick="mala()">Mala</button>           
             <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>
         </div>
-
-
     </div>
 </body>
 
@@ -49,7 +48,6 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        text-align: center;
         background: linear-gradient(#e66465, #9198e5);
         padding: 20px;
     }
@@ -59,9 +57,11 @@
     }
 
     .btn-box {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 10px;
         align-items: center;
+        justify-items: center;
         margin-top: 30px;
     }
 
@@ -77,6 +77,9 @@
         font-size: 15px;
         background-color: blue;
         color: white;
+        grid-template-areas:
+            "usuario letra"
+            "mala buena";
     }
 
     button:hover {
@@ -86,8 +89,8 @@
 
     p {
         font-size: 20px;
-        text-align: auto;
         margin-top: 10px;
+        text-align: left;
     }
 
     #palabraSeleccionada {
@@ -96,6 +99,18 @@
 
     #palabraRandom {
         font-style: italic;
+    }
+
+    #usuario {
+        grid-area: usuario;
+    }
+
+    #mala {
+        grid-area: mala;
+    }
+
+    #buena {
+        grid-area: buena;
     }
 
     button:disabled {
@@ -114,9 +129,6 @@
     let listausuariosestatica = [];
     let listausuariosidestatica = [];
     let listaletrasestaica = [];
-    let listasletrasdinamica = [];
-    let listausuariosdinamica = [];
-    let listausuariosiddinamica = [];
     const socket = io('http://localhost:4000');
     let pa = '';
 
@@ -137,15 +149,17 @@
     })
 
     setInterval(() => {
-        document.getElementById('usuario').innerHTML = listausuariosestatica[0];
-        document.getElementById('letra').innerHTML = listaletrasestaica[0];
-        document.getElementById('Buena').disabled = false;
-        document.getElementById('Mala').disabled = false;
-        idjuga = listausuariosidestatica[0];
-        listausuariosestatica.shift();
-        listaletrasestaica.shift();
-        listausuariosidestatica.shift();
-        console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
+        if (listaletrasestaica.length > 0) {
+            document.getElementById('usuario').innerHTML = listausuariosestatica[0];
+            document.getElementById('letra').innerHTML = listaletrasestaica[0];
+            document.getElementById('Buena').disabled = false;
+            document.getElementById('Mala').disabled = false;
+            idjuga = listausuariosidestatica[0];
+            listausuariosestatica.shift();
+            listaletrasestaica.shift();
+            listausuariosidestatica.shift();
+            console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
+        }
     }, 20000);
 
     socket.on('ganador-a-todos', (usuario) => {
@@ -158,6 +172,9 @@
     });
 
     function reiniciar() {
+        listausuariosestatica = [];
+        listausuariosidestatica = [];
+        listaletrasestaica = [];
         document.getElementById('Aceptar').disabled = false;
         document.getElementById('otraPalabra').disabled = false;
         document.getElementById('Buena').disabled = true;

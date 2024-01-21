@@ -12,7 +12,7 @@
         <label for="campoNombre" id="nombreusuario">Ingrese su apodo</label>
         <input type="text" id="campoNombre" />
         <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
-        <p id="statusDescripcion">El sala esta:
+        <p id="statusDescripcion">El estado de la partida es:
         <p id="statusP"></p>
         </p>
     </div>
@@ -30,14 +30,46 @@
     <div id="sidebar-left" onclick="null">
         <div id="time" onclick="null">0</div>
         <canvas id="stopwatch" width=200 height=200 onclick="null"></canvas>
-        <img id="reset" src="./images/stopwatch.png"></button>
-        <label for="reset" style="text-align: center;">Tiempo restante en tu turno</label>
+        <img id="reset" src="">
+        <label for="reset" style="text-align: center;"></label>
         <p id="turnoUsuario"></p>
-        
     </div>
-
 </body>
 <style>
+    /* Estilos para dispositivos móviles */
+    @media only screen and (max-width: 600px) {
+        /* Agrega aquí los estilos para dispositivos móviles */
+        body {
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 10px;
+        }
+    }
+    /* Estilos para tabletas */
+    @media only screen and (min-width: 601px) and (max-width: 1024px) {
+        /* Agrega aquí los estilos para tabletas */
+        body {
+            font-size: 16px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+    }
+    /* Estilos para pantallas grandes */
+    @media only screen and (min-width: 1025px) {
+        /* Agrega aquí los estilos para pantallas grandes */
+        body {
+            font-size: 18px;
+        }
+
+        .container {
+            padding: 30px;
+        }
+    }
+    
     * {
         margin: 0;
         padding: 0;
@@ -70,13 +102,18 @@
     }
 
     .container {
-        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* Añadido para centrar verticalmente */
+        max-width: 1000px;
+        height: auto;
         margin: 0 auto;
         padding: 20px;
         background-color: #fff;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         margin-left: 200px;
-        /* Ajusta el margen izquierdo para dejar espacio para la barra lateral */
     }
 
     h1 {
@@ -210,35 +247,6 @@
         color: #fff;
     }
 
-    #time {
-        margin-top: 30px;
-        color: #3399cc;
-        font-family: Arial;
-        font-size: 40px;
-        position: absolute;
-        left: 50%;
-        top: 80px;
-        margin-left: -100px;
-        width: 200px;
-        height: 50px;
-        text-align: center;
-        line-height: 50px;
-        border-radius: 5px;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        -o-border-radius: 5px;
-        -ms-border-radius: 5px;
-    }
-
-    #stopwatch {
-        margin-top: 30px;
-        position: absolute;
-        left: 50%;
-        margin-left: -100px;
-        border: 2px solid #3399cc;
-        -webkit-border-radius: 200px;
-        border-radius: 200px;
-    }
 
     #palabraResaltada {
         font-size: 30px;
@@ -250,14 +258,14 @@
         margin-top: 250px;
     }
 </style>
-
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 
     const socket = io('http://localhost:4000');
 
     let answer = '';
-    let respuesta = '';
+    let respuestaGeneral = true;
+    let nIntervId = '';
     let palabrau = '';
     let general = [];
     let anfitrion = '';
@@ -265,24 +273,17 @@
     let leusadas = [];
     let leactual = '';
     let partida = false;
-    let usuario = 'pepito perez';
+    let usuario = '';
     document.getElementById('sidebar-left').style.pointerEvents = 'none';
-    let canvas = document.getElementById('stopwatch'),
-        ctx = canvas.getContext('2d'),
-        digital = document.getElementById('time'),
-        reset = document.getElementById('reset'),
-        timerOn = false,
-        second = 2 * Math.PI / 60,
-        start = 1.5 * Math.PI,
-        t = 0,
-        animation;
 
     function status() {
         socket.emit('partida-empezada', (Response) => {
             if (Response == true) {
-                document.getElementById('statusP').innerHTML = 'Iniciada';
+                document.getElementById('statusP').innerHTML = 'Partida Iniciada';
+                document.getElementById('statusP').style.color = 'red';
             } else {
-                document.getElementById('statusP').innerHTML = 'No Iniciada';
+                document.getElementById('statusP').innerHTML = 'Esperando jugadores para empezar la partida';
+                document.getElementById('statusP').style.color = 'green';
             }
         });
     }
@@ -293,6 +294,7 @@
         document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
         document.getElementById('maximosFallos').innerHTML = 6;
         habilitarletras();
+        status();
     })
 
     function ganar() {
@@ -303,36 +305,40 @@
         }
     }
 
-    setInterval(() => {
-        document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
-            switch (parseInt(document.getElementById('fallos').innerHTML)) {
-                case 1:
-                    document.getElementById('hangmanPic').src = './images/1.jpg';
-                    break;
-                case 2:
-                    document.getElementById('hangmanPic').src = './images/2.jpg';
-                    break;
-                case 3:
-                    document.getElementById('hangmanPic').src = './images/3.jpg';
-                    break;
-                case 4:
-                    document.getElementById('hangmanPic').src = './images/4.jpg';
-                    break;
-                case 5:
-                    document.getElementById('hangmanPic').src = './images/5.jpg';
-                    break;
-                case 6:
-                    document.getElementById('hangmanPic').src = './images/6.jpg';
-                    break;
-                default:
-                    break;
+    function espera() {
+        nIntervId = setInterval(() => {
+            if (respuestaGeneral == false) {
+                document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+                switch (parseInt(document.getElementById('fallos').innerHTML)) {
+                    case 1:
+                        document.getElementById('hangmanPic').src = './images/1.jpg';
+                        break;
+                    case 2:
+                        document.getElementById('hangmanPic').src = './images/2.jpg';
+                        break;
+                    case 3:
+                        document.getElementById('hangmanPic').src = './images/3.jpg';
+                        break;
+                    case 4:
+                        document.getElementById('hangmanPic').src = './images/4.jpg';
+                        break;
+                    case 5:
+                        document.getElementById('hangmanPic').src = './images/5.jpg';
+                        break;
+                    case 6:
+                        document.getElementById('hangmanPic').src = './images/6.jpg';
+                        break;
+                    default:
+                        break;
+                }
             }
-        
-    }, 60000);
+            clearInterval(nIntervId);
+        }, 30000);
+    }
 
     function nombre() {
         socket.emit('partida-empezada', (Response) => {
-            partida = Response;
+            partida = Response;          
             if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
                 alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
             } else {
@@ -375,10 +381,10 @@
         }
     })
 
-    function quitarLetrasUsadas(){
+    function quitarLetrasUsadas() {
         for (let i = 0; i < leusadas.length; i++) {
             document.getElementById(leusadas[i]).disabled = true;
-        }    
+        }
     }
 
     function quitarletras() {
@@ -394,13 +400,14 @@
     }
 
     socket.on('respuesta-a-usuario', (respuesta) => {
+        respuestaGeneral = true;
         if (respuesta == true) {
             general.indexOf(leactual) === -1 ? general.push(leactual) : null;
             if (palabrau.indexOf(leactual) >= 0) {
                 document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
         } else if (respuesta == false) {
-            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 6;
             switch (parseInt(document.getElementById('fallos').innerHTML)) {
                 case 1:
                     document.getElementById('hangmanPic').src = './images/1.jpg';
@@ -462,6 +469,7 @@
     }
 
     function handleGuess(letraEscogida) {
+        respuestaGeneral = false;
         document.getElementById(letraEscogida).setAttribute('disabled', true);
         leusadas.push(letraEscogida);
         leactual = letraEscogida;
@@ -469,7 +477,6 @@
         for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = true;
         }
-        resetcont();
     }
 
     status();
