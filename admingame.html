@@ -50,7 +50,7 @@
         top: 50%;
         transform: translate(-50%, -50%);
         text-align: center;
-        background:linear-gradient(#e66465, #9198e5);
+        background: linear-gradient(#e66465, #9198e5);
         padding: 20px;
     }
 
@@ -108,6 +108,14 @@
     let id = '';
     let idjuga = '';
     let usu = '';
+    let vacio = true;
+    let respuestausuario = false;
+    let listausuariosestatica = [];
+    let listausuariosidestatica = [];
+    let listaletrasestaica = [];
+    let listasletrasdinamica = [];
+    let listausuariosdinamica = [];
+    let listausuariosiddinamica = [];
     const socket = io('http://localhost:4000');
     let pa = '';
 
@@ -115,14 +123,24 @@
         id = socket.id;
 
         socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
-            console.log(letra, idjugador, usuario);
-            idjuga = idjugador;
-            document.getElementById('usuario').innerHTML = usuario;
-            document.getElementById('letra').innerHTML = letra;
-            document.getElementById('Buena').disabled = false;
-            document.getElementById('Mala').disabled = false;
+            listausuariosestatica.push(usuario);
+            listausuariosidestatica.push(idjugador);
+            listaletrasestaica.push(letra);
+            console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
         })
     })
+
+    setInterval(() => {
+        document.getElementById('usuario').innerHTML = listausuariosestatica[0];
+        document.getElementById('letra').innerHTML = listaletrasestaica[0];
+        document.getElementById('Buena').disabled = false;
+        document.getElementById('Mala').disabled = false;
+        idjuga = listausuariosidestatica[0];
+        listausuariosestatica.shift();
+        listaletrasestaica.shift();
+        listausuariosidestatica.shift();
+        console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
+    }, 20000);
 
     socket.on('ganador-a-todos', (usuario) => {
         alert('El ganador es: ' + usuario);
@@ -163,20 +181,24 @@
         document.getElementById('Aceptar').disabled = true;
         document.getElementById('otraPalabra').disabled = true;
 
+
     })
 
     function buena() {
         socket.emit('respuesta-anfitrion', 1, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        document.getElementById('usuario').innerHTML = '';
+        document.getElementById('letra').innerHTML = '';
     }
 
     function mala() {
         socket.emit('respuesta-anfitrion', 0, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        document.getElementById('usuario').innerHTML = '';
+        document.getElementById('letra').innerHTML = '';
     }
-
 </script>
 
 </html>

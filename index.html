@@ -4,17 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
     <title>El Ahorcado</title>
 </head>
 
-<body>   
-    <div class="container">      
-        <h1 class="text-center">El Ahorcado</h1>
-        <label for="campoNombre" id="nombreusuario">Ingrese su usuario</label>
+<body>
+    <div id="sidebar">
+        <label for="campoNombre" id="nombreusuario">Ingrese su apodo</label>
         <input type="text" id="campoNombre" />
         <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
+        <p id="statusDescripcion">El sala esta:
+        <p id="statusP"></p>
+        </p>
+    </div>
+    <div class="container">
+        <h1 class="text-center">El Ahorcado</h1>
         <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span></div>
         <div class="text-center">
             <img id='hangmanPic' src="./images/0.jpg" alt="">
@@ -24,14 +27,46 @@
         </div>
         <button id="jugarNuevo" style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
     </div>
+    <div id="sidebar-left" onclick="null">
+        <div id="time" onclick="null">0</div>
+        <canvas id="stopwatch" width=200 height=200 onclick="null"></canvas>
+        <img id="reset" src="./images/stopwatch.png"></button>
+        <label for="reset" style="text-align: center;">Tiempo restante en tu turno</label>
+        <p id="turnoUsuario"></p>
+        
+    </div>
 
 </body>
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     body {
         font-family: Arial, sans-serif;
         background-color: black;
         margin: 0;
         padding: 0;
+    }
+
+    #sidebar {
+        width: 200px;
+        background-color: #ccc;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+    }
+
+    #sidebar-left {
+        width: 300px;
+        background-color: #ccc;
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100%;
     }
 
     .container {
@@ -40,6 +75,8 @@
         padding: 20px;
         background-color: #fff;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        margin-left: 200px;
+        /* Ajusta el margen izquierdo para dejar espacio para la barra lateral */
     }
 
     h1 {
@@ -80,6 +117,7 @@
     }
 
     p {
+
         margin-bottom: 10px;
     }
 
@@ -112,7 +150,6 @@
         cursor: default;
     }
 
-
     #jugarNuevo {
         margin-top: 20px;
         padding: 10px 20px;
@@ -123,9 +160,94 @@
         cursor: pointer;
     }
 
+    #statusDescripcion {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    #statusP {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 5px;
+    }
+
     #jugarNuevo:hover {
         background-color: #999;
         color: #fff;
+    }
+
+    #nombreusuario {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    #campoNombre {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #aceptarNombre {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #aceptarNombre:hover {
+        background-color: #999;
+        color: #fff;
+    }
+
+    #time {
+        margin-top: 30px;
+        color: #3399cc;
+        font-family: Arial;
+        font-size: 40px;
+        position: absolute;
+        left: 50%;
+        top: 80px;
+        margin-left: -100px;
+        width: 200px;
+        height: 50px;
+        text-align: center;
+        line-height: 50px;
+        border-radius: 5px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -o-border-radius: 5px;
+        -ms-border-radius: 5px;
+    }
+
+    #stopwatch {
+        margin-top: 30px;
+        position: absolute;
+        left: 50%;
+        margin-left: -100px;
+        border: 2px solid #3399cc;
+        -webkit-border-radius: 200px;
+        border-radius: 200px;
+    }
+
+    #palabraResaltada {
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    #reset {
+        margin-left: 150px;
+        margin-top: 250px;
     }
 </style>
 
@@ -135,6 +257,7 @@
     const socket = io('http://localhost:4000');
 
     let answer = '';
+    let respuesta = '';
     let palabrau = '';
     let general = [];
     let anfitrion = '';
@@ -143,13 +266,33 @@
     let leactual = '';
     let partida = false;
     let usuario = 'pepito perez';
+    document.getElementById('sidebar-left').style.pointerEvents = 'none';
+    let canvas = document.getElementById('stopwatch'),
+        ctx = canvas.getContext('2d'),
+        digital = document.getElementById('time'),
+        reset = document.getElementById('reset'),
+        timerOn = false,
+        second = 2 * Math.PI / 60,
+        start = 1.5 * Math.PI,
+        t = 0,
+        animation;
+
+    function status() {
+        socket.emit('partida-empezada', (Response) => {
+            if (Response == true) {
+                document.getElementById('statusP').innerHTML = 'Iniciada';
+            } else {
+                document.getElementById('statusP').innerHTML = 'No Iniciada';
+            }
+        });
+    }
 
     socket.on('palabra-recibir', (palabra, id) => {
         palabrau = palabra;
         anfitrion = id;
-        console.log(palabrau, anfitrion)
         document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
         document.getElementById('maximosFallos').innerHTML = 6;
+        habilitarletras();
     })
 
     function ganar() {
@@ -161,14 +304,26 @@
     }
 
     function nombre() {
-        usuario = document.getElementById('campoNombre').value;
-        for (let i = 0; i < todosletras.length; i++) {
-            document.getElementById(todosletras[i]).disabled = false;
-        }
-        document.getElementById('campoNombre').style.visibility = 'hidden';
-        document.getElementById('aceptarNombre').style.visibility = 'hidden';
-        document.getElementById('nombreusuario').style.visibility = 'hidden';
+        socket.emit('partida-empezada', (Response) => {
+            partida = Response;
+            if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
+                alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
+            } else {
+                if (document.getElementById('campoNombre').value == '') {
+                    alert('Ingrese un nombre de usuario');
+                    return;
+                } else {
+                    usuario = document.getElementById('campoNombre').value;
+                    document.getElementById('campoNombre').style.visibility = 'hidden';
+                    document.getElementById('aceptarNombre').style.visibility = 'hidden';
+                    document.getElementById('nombreusuario').style.visibility = 'hidden';
+                    socket.emit('registro-usuario', socket.id);
+                }
+            }
+        });
     }
+
+
 
     reiniciar = () => {
         location.reload();
@@ -186,13 +341,74 @@
         }
     })
 
-    socket.on('respuesta-a-usuario', (respuesta) => {
-        if (respuesta == 1) {
+    socket.on('jugador-actual', (usuarioS) => {
+        if (usuarioS == usuario) {
+            document.getElementById('turnoUsuario').innerHTML = 'Tu turno';
+        } else {
+            document.getElementById('turnoUsuario').innerHTML = 'Turno de: ' + usuarioS;
+        }
+    })
+
+    function quitarLetrasUsadas(){
+        for (let i = 0; i < leusadas.length; i++) {
+            document.getElementById(leusadas[i]).disabled = true;
+        }    
+    }
+
+    function quitarletras() {
+        for (let i = 0; i < todosletras.length; i++) {
+            document.getElementById(todosletras[i]).disabled = true;
+        }
+    }
+
+    function habilitarletras() {
+        for (let i = 0; i < todosletras.length; i++) {
+            document.getElementById(todosletras[i]).disabled = false;
+        }
+    }
+
+    socket.on('enviar-respuesta-a-usuario', (callback) => {
+        if (respuesta == true) {
             general.indexOf(leactual) === -1 ? general.push(leactual) : null;
             if (palabrau.indexOf(leactual) >= 0) {
                 document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
-        } else if (respuesta == 0) {
+        } else if (respuesta == false) {
+            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+            switch (parseInt(document.getElementById('fallos').innerHTML)) {
+                case 1:
+                    document.getElementById('hangmanPic').src = './images/1.jpg';
+                    break;
+                case 2:
+                    document.getElementById('hangmanPic').src = './images/2.jpg';
+                    break;
+                case 3:
+                    document.getElementById('hangmanPic').src = './images/3.jpg';
+                    break;
+                case 4:
+                    document.getElementById('hangmanPic').src = './images/4.jpg';
+                    break;
+                case 5:
+                    document.getElementById('hangmanPic').src = './images/5.jpg';
+                    break;
+                case 6:
+                    document.getElementById('hangmanPic').src = './images/6.jpg';
+                    break;
+                default:
+                    break;
+            }
+        }
+        ganar();
+        callback('todo bien');
+    })  
+
+    socket.on('respuesta-a-usuario', (respuesta) => {
+        if (respuesta == true) {
+            general.indexOf(leactual) === -1 ? general.push(leactual) : null;
+            if (palabrau.indexOf(leactual) >= 0) {
+                document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
+            }
+        } else if (respuesta == false) {
             document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
             switch (parseInt(document.getElementById('fallos').innerHTML)) {
                 case 1:
@@ -233,6 +449,14 @@
         }
     })
 
+    socket.on('verify', (callback) => {
+        callback(true);
+    })
+
+    socket.on('disconnect', () => {
+        socket.emit('disconnect');
+    })
+
     function generadorBotones() {
         let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
             `
@@ -251,28 +475,17 @@
     }
 
     function handleGuess(letraEscogida) {
-        socket.emit('partida-empezada', (Response) => {
-            partida = Response;
-            if (partida == false) {
-                alert('Espera a que el anfitrion empiece la partida');
-            } else if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
-                alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
-            } else {
-                document.getElementById(letraEscogida).setAttribute('disabled', true);
-                leusadas.push(letraEscogida);
-                leactual = letraEscogida;
-                socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
-                for (let i = 0; i < todosletras.length; i++) {
-                    document.getElementById(todosletras[i]).disabled = true;
-                }
-            }
-        });
+        document.getElementById(letraEscogida).setAttribute('disabled', true);
+        leusadas.push(letraEscogida);
+        leactual = letraEscogida;
+        socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
+        for (let i = 0; i < todosletras.length; i++) {
+            document.getElementById(todosletras[i]).disabled = true;
+        }
+        resetcont();
     }
 
-    function status() {
-
-    }
-
+    status();
     generadorBotones();
 
 </script>
