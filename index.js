@@ -22,9 +22,14 @@ const io = require('socket.io')(server, {
 io.on('connection', (socket) => {
 
   socket.on('enviar-palabra-todos', (palabra, id) => {
-    anfitrion = id;
-    partidaEmpezada = true;
-    socket.broadcast.emit('palabra-recibir', palabra, id)   
+    if (anfitrion == '') {
+      anfitrion = id;
+      partidaEmpezada = true;
+      socket.broadcast.emit('palabra-recibir', palabra, id)
+    }else{
+      socket.to(id).emit('anfitrion-ya-existe')
+    }
+
   });
 
   socket.on('letra-enviada', (letra, idjugador, usuario) => {
@@ -44,7 +49,7 @@ io.on('connection', (socket) => {
 
   socket.on('perdedor', (usuario) => {
     playercont--;
-    if(playercont == 0){
+    if (playercont == 0) {
       partidaEmpezada = false;
       playerList = [];
       playerstatus = [];

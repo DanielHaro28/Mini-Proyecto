@@ -14,13 +14,13 @@
             <p id="palabraSeleccionada"></p>
             <p id="palabra"></p>
             <button id="otraPalabra">Nueva palabra</button>
-            <p>Palabra: <span id="palabraRandom">palabra</span></p>
+            <p>Palabra: <span id="palabraRandom"></span></p>
             <button id="Aceptar">Aceptar</button>
-            <p>Usuario: <span id="usuario">usu</span></p>
-            <p>Letra: <span id="letra">letra</span></p>
-            <button id="siguiente" onclick="siguiente()">Siguiente Letra</button>
+            <p>Usuario: <span id="usuario"></span></p>
+            <p>Letra: <span id="letra"></span></p>
+            <button id="siguiente" onclick="siguiente()" disabled="true">Siguiente Letra</button>
             <button id="Buena" disabled="true" onclick="buena()">Buena</button>
-            <button id="Mala" disabled="true" onclick="mala()">Mala</button>           
+            <button id="Mala" disabled="true" onclick="mala()">Mala</button>
             <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>
         </div>
     </div>
@@ -139,28 +139,18 @@
             listausuariosestatica.push(usuario);
             listausuariosidestatica.push(idjugador);
             listaletrasestaica.push(letra);
-            console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
+            document.getElementById('siguiente').disabled = false;
         })
+    })
+
+    socket.on('anfitrion-ya-existe', () => {
+        alert('Ya existe un anfitrion en la sala');
     })
 
     socket.on('partida-terminada', () => {
         alert('La partida ha terminado');
         document.getElementById('Reiniciar').disabled = false;
     })
-
-    setInterval(() => {
-        if (listaletrasestaica.length > 0) {
-            document.getElementById('usuario').innerHTML = listausuariosestatica[0];
-            document.getElementById('letra').innerHTML = listaletrasestaica[0];
-            document.getElementById('Buena').disabled = false;
-            document.getElementById('Mala').disabled = false;
-            idjuga = listausuariosidestatica[0];
-            listausuariosestatica.shift();
-            listaletrasestaica.shift();
-            listausuariosidestatica.shift();
-            console.log(listausuariosestatica, listaletrasestaica, listausuariosidestatica);
-        }
-    }, 20000);
 
     socket.on('ganador-a-todos', (usuario) => {
         alert('El ganador es: ' + usuario);
@@ -211,6 +201,11 @@
         socket.emit('respuesta-anfitrion', 1, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        if (listausuariosestatica.length > 0) {
+            document.getElementById('siguiente').disabled = false;
+        } else {
+            document.getElementById('siguiente').disabled = true;
+        }
         document.getElementById('usuario').innerHTML = '';
         document.getElementById('letra').innerHTML = '';
     }
@@ -219,8 +214,27 @@
         socket.emit('respuesta-anfitrion', 0, idjuga);
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        if (listausuariosestatica.length > 0) {
+            document.getElementById('siguiente').disabled = false;
+        } else {
+            document.getElementById('siguiente').disabled = true;
+        }
         document.getElementById('usuario').innerHTML = '';
         document.getElementById('letra').innerHTML = '';
+    }
+
+    function siguiente() {
+        if (listaletrasestaica != undefined) {
+            document.getElementById('usuario').innerHTML = listausuariosestatica[0];
+            document.getElementById('letra').innerHTML = listaletrasestaica[0];
+            idjuga = listausuariosidestatica[0];
+            document.getElementById('Buena').disabled = false;
+            document.getElementById('Mala').disabled = false;
+            listausuariosestatica.shift();
+            listaletrasestaica.shift();
+            listausuariosidestatica.shift();
+        }
+
     }
 </script>
 
