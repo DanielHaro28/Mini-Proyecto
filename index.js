@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
       anfitrion = id;
       partidaEmpezada = true;
       socket.broadcast.emit('palabra-recibir', palabra, id)
-    }else{
+    } else {
       socket.to(id).emit('anfitrion-ya-existe', id)
     }
 
