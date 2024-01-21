@@ -8,6 +8,13 @@
 </head>
 
 <body>
+    
+    <div id="barraLateralizquierda">
+        <p class="relleno">Jugadores en sala</p>
+        <p>Conectados: <span id="jugadoresTotal"></span></p>
+        <p>Vivos: <span id="jugadoresVivos"></span></p>
+        <p>Derrotados: <span id="jugadoresDerrotados"></span></p>
+    </div>
     <div class="fondo">
         <h1>Game Admin Room</h1>
         <div class="btn-box">
@@ -19,11 +26,12 @@
             <p>Usuario: <span id="usuario"></span></p>
             <p>Letra: <span id="letra"></span></p>
             <button id="siguiente" onclick="siguiente()" disabled="true">Siguiente Letra</button>
-            <button id="Buena" disabled="true" onclick="buena()">Buena</button>
-            <button id="Mala" disabled="true" onclick="mala()">Mala</button>
+            <button id="Buena" disabled="true" onclick="btnrepuesta(1)">Buena</button>
+            <button id="Mala" disabled="true" onclick="btnrepuesta(0)">Mala</button>
             <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>
         </div>
     </div>
+
 </body>
 
 <style>
@@ -39,8 +47,49 @@
         text-align: center;
     }
 
+    span {
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .relleno {
+        font-weight: bold;
+        font-size: 20px;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    #jugadoresTotal {
+        font-weight: bold;
+        color: blue;
+        font-size: 20px;
+    }
+
+    #jugadoresVivos {
+        font-weight: bold;
+        color: green;
+        font-size: 20px;
+    }
+
+    #jugadoresDerrotados {
+        font-weight: bold;
+        color: red;
+        font-size: 20px;
+    }
+
+    #barraLateralizquierda {
+        margin: 0;
+        padding: 0;
+        width: 200px;
+        background-color: #ccc;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+    }
+
     .fondo {
-        width: 800px;
+        width: 600px;
         height: 600px;
         border-radius: 10px;
         border-style: solid;
@@ -123,6 +172,9 @@
     let id = '';
     let idjuga = '';
     let usu = '';
+    let maxJugadores = 0;
+    let actJugadores = 0;
+    let derJugadores = 0;
     let respuesta = 0;
     let vacio = true;
     let respuestausuario = false;
@@ -134,13 +186,14 @@
 
     socket.on('connect', () => {
         id = socket.id;
+        socket.emit('anfitrion-conectado', id);
+    })
 
-        socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
-            listausuariosestatica.push(usuario);
-            listausuariosidestatica.push(idjugador);
-            listaletrasestaica.push(letra);
-            document.getElementById('siguiente').disabled = false;
-        })
+    socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
+        listausuariosestatica.push(usuario);
+        listausuariosidestatica.push(idjugador);
+        listaletrasestaica.push(letra);
+        document.getElementById('siguiente').disabled = false;
     })
 
     socket.on('anfitrion-ya-existe', (id) => {
@@ -160,6 +213,8 @@
 
     socket.on('perdedor-a-anfitrion', (usuario) => {
         alert('El Usuario: ' + usuario + ' ha perdido');
+        derJugadores++;
+        document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
     });
 
     function reiniciar() {
@@ -194,27 +249,25 @@
         socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML, id);
         document.getElementById('Aceptar').disabled = true;
         document.getElementById('otraPalabra').disabled = true;
-
+        socket.emit('contador-jugadores', (Response) => {
+            maxJugadores = Response;
+            actJugadores = Response;
+            document.getElementById('jugadoresVivos').innerHTML = actJugadores;
+            document.getElementById('jugadoresTotal').innerHTML = maxJugadores;
+            document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
+        });
 
     })
 
-    function buena() {
-        socket.emit('respuesta-anfitrion', 1, idjuga);
+    function btnrepuesta(condicional) {
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
-        if (listausuariosestatica.length > 0) {
-            document.getElementById('siguiente').disabled = false;
+        if (condicional == 1) {
+            socket.emit('respuesta-anfitrion', condicional, idjuga);
         } else {
-            document.getElementById('siguiente').disabled = true;
-        }
-        document.getElementById('usuario').innerHTML = '';
-        document.getElementById('letra').innerHTML = '';
-    }
+            socket.emit('respuesta-anfitrion', condicional, idjuga);
 
-    function mala() {
-        socket.emit('respuesta-anfitrion', 0, idjuga);
-        document.getElementById('Buena').disabled = true;
-        document.getElementById('Mala').disabled = true;
+        }
         if (listausuariosestatica.length > 0) {
             document.getElementById('siguiente').disabled = false;
         } else {

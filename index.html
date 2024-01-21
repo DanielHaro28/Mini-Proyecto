@@ -38,6 +38,7 @@
 <style>
     /* Estilos para dispositivos móviles */
     @media only screen and (max-width: 600px) {
+
         /* Agrega aquí los estilos para dispositivos móviles */
         body {
             font-size: 14px;
@@ -47,8 +48,10 @@
             padding: 10px;
         }
     }
+
     /* Estilos para tabletas */
     @media only screen and (min-width: 601px) and (max-width: 1024px) {
+
         /* Agrega aquí los estilos para tabletas */
         body {
             font-size: 16px;
@@ -58,8 +61,10 @@
             padding: 20px;
         }
     }
+
     /* Estilos para pantallas grandes */
     @media only screen and (min-width: 1025px) {
+
         /* Agrega aquí los estilos para pantallas grandes */
         body {
             font-size: 18px;
@@ -69,7 +74,7 @@
             padding: 30px;
         }
     }
-    
+
     * {
         margin: 0;
         padding: 0;
@@ -106,7 +111,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        /* Añadido para centrar verticalmente */
         max-width: 1000px;
         height: auto;
         margin: 0 auto;
@@ -338,7 +342,7 @@
 
     function nombre() {
         socket.emit('partida-empezada', (Response) => {
-            partida = Response;          
+            partida = Response;
             if (partida == true && document.getElementById('palabraResaltada').innerHTML == '') {
                 alert('La partida ya empezo, espera a que el anfitrion empieze una nueva partida');
             } else {
