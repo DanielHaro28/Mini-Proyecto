@@ -266,7 +266,6 @@
 <script type="text/javascript">
 
     const socket = io('http://localhost:4000');
-    let respuestaGeneral = true;
     let palabraElegida = '';
     let general = [];
     let anfitrion = '';
@@ -370,42 +369,45 @@
         document.getElementById('jugarNuevo').style.visibility = 'visible';
     })
 
-    //
-    socket.on('jugador-actual', (usuarioS) => {
-        if (usuarioS == usuario) {
-            document.getElementById('turnoUsuario').innerHTML = 'Tu turno';
-        } else {
-            document.getElementById('turnoUsuario').innerHTML = 'Turno de: ' + usuarioS;
-        }
-    })
-
+    //Funcion que sirve para quitar los botones de las letras que ya se usaron
     function quitarLetrasUsadas() {
+        //Recorre el array de letras usadas y deshabilita los botones de las letras que ya se usaron
         for (let i = 0; i < letrasUsadas.length; i++) {
             document.getElementById(letrasUsadas[i]).disabled = true;
         }
     }
 
+    //Funcion que sirve para deshabilitar los botones de las letras
     function quitarletras() {
+        //Recorre el array de letras y deshabilita los botones de las letras
         for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = true;
         }
     }
 
+    //Funcion que sirve para habilitar los botones de las letras
     function habilitarletras() {
+        //Recorre el array de letras y habilita los botones de las letras
         for (let i = 0; i < todosletras.length; i++) {
             document.getElementById(todosletras[i]).disabled = false;
         }
     }
 
+    //Evento que se ejecuta cuando el usuario recibe un mensaje del servidor con la respuesta de si la letra que envio es correcta o no
     socket.on('respuesta-a-usuario', (respuesta) => {
-        respuestaGeneral = true;
+        //Si la respuesta es true significa que la letra que envio el usuario es correcta
         if (respuesta == true) {
+            //Se verifica si la letra que envio el usuario ya esta en el array de letras usadas, si no esta se agrega al array de letras usadas
             general.indexOf(letraActual) === -1 ? general.push(letraActual) : null;
+            //Se muestra la letra que envio el usuario en la palabra resaltada
             if (palabraElegida.indexOf(letraActual) >= 0) {
                 document.getElementById('palabraResaltada').innerHTML = palabraElegida.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
+        //Si la respuesta es false significa que la letra que envio el usuario es incorrecta    
         } else if (respuesta == false) {
-            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 6;
+            //Se le suma 1 a la variable fallos y se muestra en pantalla
+            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+            //Se cambia la imagen del ahorcado dependiendo de la cantidad de fallos que tenga el usuario
             switch (parseInt(document.getElementById('fallos').innerHTML)) {
                 case 1:
                     document.getElementById('hangmanPic').src = './images/1.jpg';
@@ -429,27 +431,38 @@
                     break;
             }
         }
+        //Se llama a la funcion que verifica si el usuario gano la partida
         ganar();
+        //Se habilitan los botones de las letras
         habilitarletras();
+        //Se llama a la funcion que quita los botones de las letras que ya se usaron
         quitarLetrasUsadas();
+        //Se verifica si el usuario ya tiene 6 fallos, si es asi se llama a la funcion que muestra un mensaje de que el usuario perdio la partida
         if (parseInt(document.getElementById('fallos').innerHTML) >= 6) {
-            for (let i = 0; i < todosletras.length; i++) {
-                document.getElementById(todosletras[i]).disabled = true;
-            }
+            //Se llama a la funcion que quita los botones de las letras
+            quitarletras();
+            //Se envia un mensaje al servidor de que el usuario perdio la partida
             socket.emit('perdedor', usuario);
+            //Se llama a la funcion que muestra un mensaje de que el usuario perdio la partida
             perdida();
         }
     })
 
+    //Evento que se ejecuta cuando el usuario recibe un mensaje del servidor y manda una respuesta para seber
+    //si el usuario esta conectado o no
     socket.on('verify', (callback) => {
         callback(true);
-    })
+    }) 
 
+    //Evento que se ejecuta cuando el usuario se desconecta
     socket.on('disconnect', () => {
+        //Se envia un mensaje al servidor de que el usuario se desconecto
         socket.emit('disconnect');
     })
 
+    //Funcion que sirve para generar los botones de las letras en el html
     function generadorBotones() {
+        //Se crea un array con las letras del abecedario y se recorre para crear los botones de las letras
         let buttonsHTML = 'abcdefghijklmnñopqrstuvwxyz'.split('').map(letter =>
             `
         <button 
@@ -463,21 +476,27 @@
         </button>  
         `
         ).join('');
+        //Se muestra en pantalla los botones de las letras
         document.getElementById('keyboard').innerHTML = buttonsHTML;
     }
 
+    //Funcion que se ejecuta cuando el usuario presiona un boton de una letra
     function handleGuess(letraEscogida) {
-        respuestaGeneral = false;
+        //Se desabilita el boton de la letra que escogio el usuario
         document.getElementById(letraEscogida).setAttribute('disabled', true);
+        //Se agrega la letra que escogio el usuario al array de letras usadas
         letrasUsadas.push(letraEscogida);
+        //Se le asigna la letra que escogio el usuario a la variable letraActual
         letraActual = letraEscogida;
+        //Se envia un mensaje al servidor con la letra que escogio el usuario
         socket.emit('letra-enviada', letraEscogida, socket.id, usuario);
-        for (let i = 0; i < todosletras.length; i++) {
-            document.getElementById(todosletras[i]).disabled = true;
-        }
+        //Se deshabilitan los botones de las letras
+        quitarletras();
     }
 
+    //Funcion que se llama al inicio de la pagina para saber el estado de la partida
     status();
+    //Se llama a la funcion que genera los botones de las letras
     generadorBotones();
 
 </script>

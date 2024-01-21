@@ -7,49 +7,91 @@
     <title>Game Admin Room</title>
 </head>
 
-<body>
-    
-    <div id="barraLateralizquierda">
-        <p class="relleno">Jugadores en sala</p>
-        <p>Conectados: <span id="jugadoresTotal"></span></p>
-        <p>Vivos: <span id="jugadoresVivos"></span></p>
-        <p>Derrotados: <span id="jugadoresDerrotados"></span></p>
-    </div>
+<body> 
     <div class="fondo">
-        <h1>Game Admin Room</h1>
+        <div class="barraLateralizquierda">
+            <p class="relleno">Jugadores en sala</p>
+            <p>Conectados: <span id="jugadoresTotal"></span></p>
+            <p>Vivos: <span id="jugadoresVivos"></span></p>
+            <p>Derrotados: <span id="jugadoresDerrotados"></span></p>
+        </div>
+        <div class="titulo">
+            <h1>Game Admin Room</h1>
+        </div>
         <div class="btn-box">
-            <p id="palabraSeleccionada"></p>
-            <p id="palabra"></p>
-            <button id="otraPalabra">Nueva palabra</button>
-            <p>Palabra: <span id="palabraRandom"></span></p>
-            <button id="Aceptar">Aceptar</button>
-            <p>Usuario: <span id="usuario"></span></p>
-            <p>Letra: <span id="letra"></span></p>
+            <p class="dpanel">Palabra: <span class="dpanel" id="palabraRandom"></span></p>
+            <button id="Aceptar">Aceptar</button><button id="otraPalabra">Nueva palabra</button>
+            <p class="dpanel">Usuario: <span class="dpanel" id="usuario"></span></p>
+            <p class="dpanel">Letra: <span class="dpanel" id="letra"></span></p>
             <button id="siguiente" onclick="siguiente()" disabled="true">Siguiente Letra</button>
             <button id="Buena" disabled="true" onclick="btnrepuesta(1)">Buena</button>
             <button id="Mala" disabled="true" onclick="btnrepuesta(0)">Mala</button>
             <button id="Reiniciar" disabled="true" onclick="reiniciar()">Reiniciar</button>
-        </div>
-    </div>
-
+        </div>  
+    </div> 
 </body>
 
 <style>
+    
     * {
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
     }
-
     body {
-        font-family: sans-serif;
-        background-color: black;
-        text-align: center;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(#e66465, #9198e5);
     }
 
-    span {
-        font-weight: bold;
-        font-size: 20px;
+    .fondo {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(#e66465, #9198e5);
+    }
+
+    .titulo{
+        width: 50vh;
+        position: absolute;
+        left: 43%;
+        right: 50%;
+        top: 0;
+        height: 10vh;
+        display:flex;
+        flex-direction: row;
+        margin: 0;
+    }
+    .btn-box {
+        width: 600px;
+        height: 600px;
+        border-radius: 10px;
+        border-style: solid;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(#3937c5, #9198e5);
+        padding: 20px;
+    }
+
+
+    h1{
+        margin-top: 15px;
+        color: white;
+        display: auto;
+    }
+
+    .barraLateralizquierda {
+        margin: 0;
+        padding: 0;
+        width: 200px;
+        background-color: #ccc;
+        top: 0;
+        left: 0;
+        height: 100%;
     }
 
     .relleno {
@@ -58,6 +100,30 @@
         text-align: center;
         margin-top: 10px;
     }
+
+    span {
+        font-weight: bold;
+        font-size: 25px;
+    } 
+    
+    p {
+        font-size: 20px;
+        margin-top: 10px;
+        text-align: left;
+    }    
+    
+    .dpanel{
+        color: white;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 30px;
+    }
+
+    #Reiniciar{
+        margin-top: 50px;
+        margin-bottom: 15px;
+    }
+
 
     #jugadoresTotal {
         font-weight: bold;
@@ -77,89 +143,24 @@
         font-size: 20px;
     }
 
-    #barraLateralizquierda {
-        margin: 0;
-        padding: 0;
-        width: 200px;
-        background-color: #ccc;
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-    }
-
-    .fondo {
-        width: 600px;
-        height: 600px;
-        border-radius: 10px;
-        border-style: solid;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(#e66465, #9198e5);
-        padding: 20px;
-    }
-
-    h1 {
-        margin-top: 15px;
-    }
-
-    .btn-box {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-gap: 10px;
-        align-items: center;
-        justify-items: center;
-        margin-top: 30px;
-    }
-
-    button {
+    button{
         width: 150px;
         height: 55px;
         border-radius: 6px;
         border-style: solid;
         margin-top: 10px;
+        margin-left: 25px;
         text-align: center;
         align-items: center;
         cursor: pointer;
         font-size: 15px;
         background-color: blue;
         color: white;
-        grid-template-areas:
-            "usuario letra"
-            "mala buena";
     }
 
     button:hover {
         background-color: deepskyblue;
         color: black;
-    }
-
-    p {
-        font-size: 20px;
-        margin-top: 10px;
-        text-align: left;
-    }
-
-    #palabraSeleccionada {
-        font-weight: bold;
-    }
-
-    #palabraRandom {
-        font-style: italic;
-    }
-
-    #usuario {
-        grid-area: usuario;
-    }
-
-    #mala {
-        grid-area: mala;
-    }
-
-    #buena {
-        grid-area: buena;
     }
 
     button:disabled {
@@ -169,6 +170,7 @@
 </style>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    const socket = io('http://localhost:4000');
     let id = '';
     let idjuga = '';
     let usu = '';
@@ -176,82 +178,115 @@
     let actJugadores = 0;
     let derJugadores = 0;
     let respuesta = 0;
-    let vacio = true;
-    let respuestausuario = false;
     let listausuariosestatica = [];
     let listausuariosidestatica = [];
     let listaletrasestaica = [];
-    const socket = io('http://localhost:4000');
     let pa = '';
 
+    //Envento que se ejecuta cuando el anfitrion se conecta al servidor
     socket.on('connect', () => {
+        //Se le asigna el id del socket al anfitrion
         id = socket.id;
+        //Se le envia al servidor el id del anfitrion
         socket.emit('anfitrion-conectado', id);
     })
 
+    //Evento que se ejecuta cuando el anfitrion recibe una letra del servidor
     socket.on('letra-recibida-anfitrion', (letra, idjugador, usuario) => {
+        //Se agrega el usuario que envio la letra a la lista de usuarios
         listausuariosestatica.push(usuario);
+        //Se agrega el id del jugador que envio la letra a la lista de id de jugadores
         listausuariosidestatica.push(idjugador);
+        //Se agrega la letra recibida a la lista de letras
         listaletrasestaica.push(letra);
+        //se habilita el boton de siguiente
         document.getElementById('siguiente').disabled = false;
     })
 
+    //Evento que se ejecuta cuando el servidor envia un mensaje que ya existe un anfitrion
     socket.on('anfitrion-ya-existe', (id) => {
-        console.log('Ya existe un anfitrion en la sala');
+        //Se envia un mensaje de alerta que ya existe un anfitrion
         alert('Ya existe un anfitrion en la sala');
     })
 
+    //Evento que se ejecuta cuando el servidor envia un mensaje que la partida ya termino
     socket.on('partida-terminada', () => {
+        //Se envia un mensaje de alerta que la partida ya termino
         alert('La partida ha terminado');
+        //Se habilita el boton de reiniciar
         document.getElementById('Reiniciar').disabled = false;
     })
 
+    //Ebvento que se ejecuta cuando el servidor envia un mensaje que un usuario a ganado la partida
     socket.on('ganador-a-todos', (usuario) => {
+        //Se envia un mensaje de alerta que el usuario ha ganado la partida
         alert('El ganador es: ' + usuario);
+        //Se habilita el boton de reiniciar
         document.getElementById('Reiniciar').disabled = false;
     })
 
+    //Evento que se ejecuta cuando el servidor envia un mensaje que un usuario a perdido la partida
     socket.on('perdedor-a-anfitrion', (usuario) => {
+        //Se envia un mensaje de alerta que el usuario ha perdido la partida
         alert('El Usuario: ' + usuario + ' ha perdido');
+        //Se aumenta el contador de jugadores derrotados
         derJugadores++;
+        //Se actualiza el contador de jugadores derrotados
         document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
     });
 
+    //Funcion que sirve para reiniciar la partida y volver a jugar
     function reiniciar() {
+        //Se reinician las variables
         listausuariosestatica = [];
         listausuariosidestatica = [];
         listaletrasestaica = [];
+        //Se habilitan los botones para generar palabras
         document.getElementById('Aceptar').disabled = false;
         document.getElementById('otraPalabra').disabled = false;
+        //Se deshabilitan los botones de respuesta
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        //Se limpian los campos de texto
         document.getElementById('palabraRandom').innerHTML = '';
         document.getElementById('usuario').innerHTML = '';
         document.getElementById('letra').innerHTML = '';
     }
 
+    //Funcion que sirve para quitar los acentos de una palabra
     function removeAccents(str) {
+        //Se normaliza la palabra
         return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    //Evento que se ejecuta cuando se le da click al boton de nueva palabra
     document.getElementById('otraPalabra').addEventListener('click', () => {
+        //Se obtiene una palabra aleatoria de una pagina web
         fetch('https://pow-3bae6d63ret5.deno.dev/word')
+            //Se convierte la respuesta a json
             .then(res => res.json())
+            //Se obtiene la palabra
             .then(json => {
+                //Se muestra la palabra en el html
                 document.getElementById('palabraRandom').innerHTML = removeAccents(json.word);
+                //Se guarda la palabra en una variable
                 pa = json.word;
-                console.log(pa);
             })
     })
 
-
+    //Evento que se ejecuta cuando se le da click al boton de aceptar
     document.getElementById('Aceptar').addEventListener('click', () => {
+        //Se envia la palabra a todos los jugadores
         socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML, id);
+        //Se deshabilitan los botones de generar palabras
         document.getElementById('Aceptar').disabled = true;
         document.getElementById('otraPalabra').disabled = true;
+        //Se envia un mensaje al servidor para saber cuandos jugadores hay en la sala
         socket.emit('contador-jugadores', (Response) => {
+            //Se actualiza el contador de jugadores
             maxJugadores = Response;
             actJugadores = Response;
+            //Se actualiza el contador de jugadores en el html
             document.getElementById('jugadoresVivos').innerHTML = actJugadores;
             document.getElementById('jugadoresTotal').innerHTML = maxJugadores;
             document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
@@ -259,37 +294,55 @@
 
     })
 
+    // funcion que sirve cuando se presiona el boton de buena o mala
     function btnrepuesta(condicional) {
+        //Se deshabilitan los botones de respuesta
         document.getElementById('Buena').disabled = true;
         document.getElementById('Mala').disabled = true;
+        //Si la condicion es 1 se envia un mensaje al servidor que la respuesta fue buena
         if (condicional == 1) {
+            //Se envia un mensaje al servidor que la respuesta fue buena
             socket.emit('respuesta-anfitrion', condicional, idjuga);
+        //Si la condicion es 0 se envia un mensaje al servidor que la respuesta fue mala    
         } else {
+            //Se envia un mensaje al servidor que la respuesta fue mala
             socket.emit('respuesta-anfitrion', condicional, idjuga);
 
         }
+        //Se verifica si la lista de usuarios esta vacia
         if (listausuariosestatica.length > 0) {
+            //Si no esta vacia se deja el boton de siguiente habilitado
             document.getElementById('siguiente').disabled = false;
+        //Si esta vacia se deshabilita el boton de siguiente    
         } else {
+            //Se deshabilita el boton de siguiente
             document.getElementById('siguiente').disabled = true;
         }
+        //Se limpian los campos de texto
         document.getElementById('usuario').innerHTML = '';
         document.getElementById('letra').innerHTML = '';
     }
 
+    //Funcion que sirve cuando el boton de siguiente es presionado
     function siguiente() {
+        //Se verifica si la lista de letras esta vacia
         if (listaletrasestaica != undefined) {
+            //Si no esta vacia se muestra la letra en el html y el usuario que la envio
             document.getElementById('usuario').innerHTML = listausuariosestatica[0];
             document.getElementById('letra').innerHTML = listaletrasestaica[0];
+            //Se guarda el id del jugador que envio la letra
             idjuga = listausuariosidestatica[0];
+            //Se habilitan los botones de respuesta
             document.getElementById('Buena').disabled = false;
-            document.getElementById('Mala').disabled = false;
-            listausuariosestatica.shift();
+            document.getElementById('Mala').disabled = false;       
+            //Se elimina el usuario de la lista de usuarios
+            listausuariosestatica.shift(); 
+            //Se elimina la letra de la lista de letras 
             listaletrasestaica.shift();
+            //Se elimina el id del jugador de la lista de id de jugadores
             listausuariosidestatica.shift();
         }
 
     }
 </script>
-
 </html>
