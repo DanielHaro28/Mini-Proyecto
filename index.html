@@ -303,6 +303,33 @@
         }
     }
 
+    setInterval(() => {
+        document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
+            switch (parseInt(document.getElementById('fallos').innerHTML)) {
+                case 1:
+                    document.getElementById('hangmanPic').src = './images/1.jpg';
+                    break;
+                case 2:
+                    document.getElementById('hangmanPic').src = './images/2.jpg';
+                    break;
+                case 3:
+                    document.getElementById('hangmanPic').src = './images/3.jpg';
+                    break;
+                case 4:
+                    document.getElementById('hangmanPic').src = './images/4.jpg';
+                    break;
+                case 5:
+                    document.getElementById('hangmanPic').src = './images/5.jpg';
+                    break;
+                case 6:
+                    document.getElementById('hangmanPic').src = './images/6.jpg';
+                    break;
+                default:
+                    break;
+            }
+        
+    }, 60000);
+
     function nombre() {
         socket.emit('partida-empezada', (Response) => {
             partida = Response;
@@ -336,9 +363,8 @@
 
     socket.on('ganador-a-todos', (usuario) => {
         alert('El ganador es: ' + usuario);
-        for (let i = 0; i < todosletras.length; i++) {
-            document.getElementById(todosletras[i]).disabled = false;
-        }
+        quitarletras();
+        document.getElementById('jugarNuevo').style.visibility = 'visible';
     })
 
     socket.on('jugador-actual', (usuarioS) => {
@@ -366,41 +392,6 @@
             document.getElementById(todosletras[i]).disabled = false;
         }
     }
-
-    socket.on('enviar-respuesta-a-usuario', (callback) => {
-        if (respuesta == true) {
-            general.indexOf(leactual) === -1 ? general.push(leactual) : null;
-            if (palabrau.indexOf(leactual) >= 0) {
-                document.getElementById('palabraResaltada').innerHTML = palabrau.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
-            }
-        } else if (respuesta == false) {
-            document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
-            switch (parseInt(document.getElementById('fallos').innerHTML)) {
-                case 1:
-                    document.getElementById('hangmanPic').src = './images/1.jpg';
-                    break;
-                case 2:
-                    document.getElementById('hangmanPic').src = './images/2.jpg';
-                    break;
-                case 3:
-                    document.getElementById('hangmanPic').src = './images/3.jpg';
-                    break;
-                case 4:
-                    document.getElementById('hangmanPic').src = './images/4.jpg';
-                    break;
-                case 5:
-                    document.getElementById('hangmanPic').src = './images/5.jpg';
-                    break;
-                case 6:
-                    document.getElementById('hangmanPic').src = './images/6.jpg';
-                    break;
-                default:
-                    break;
-            }
-        }
-        ganar();
-        callback('todo bien');
-    })  
 
     socket.on('respuesta-a-usuario', (respuesta) => {
         if (respuesta == true) {
@@ -434,12 +425,8 @@
             }
         }
         ganar();
-        for (let i = 0; i < todosletras.length; i++) {
-            document.getElementById(todosletras[i]).disabled = false;
-        }
-        for (let i = 0; i < leusadas.length; i++) {
-            document.getElementById(leusadas[i]).disabled = true;
-        }
+        habilitarletras();
+        quitarLetrasUsadas();
         if (parseInt(document.getElementById('fallos').innerHTML) >= 6) {
             for (let i = 0; i < todosletras.length; i++) {
                 document.getElementById(todosletras[i]).disabled = true;

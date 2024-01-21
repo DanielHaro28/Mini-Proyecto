@@ -41,6 +41,11 @@ io.on('connection', (socket) => {
   });
 
   socket.on('perdedor', (usuario) => {
+    playercont--;
+    if(playercont == 0){
+      partidaEmpezada = false;
+      socket.to(anfitrion).emit('partida-terminada', usuario)
+    }
     socket.to(anfitrion).emit('perdedor-a-anfitrion', usuario)
   });
 

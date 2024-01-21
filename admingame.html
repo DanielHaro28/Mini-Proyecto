@@ -108,6 +108,7 @@
     let id = '';
     let idjuga = '';
     let usu = '';
+    let respuesta = 0;
     let vacio = true;
     let respuestausuario = false;
     let listausuariosestatica = [];
@@ -130,6 +131,11 @@
         })
     })
 
+    socket.on('partida-terminada', () => {
+        alert('La partida ha terminado');
+        document.getElementById('Reiniciar').disabled = false;
+    })
+
     setInterval(() => {
         document.getElementById('usuario').innerHTML = listausuariosestatica[0];
         document.getElementById('letra').innerHTML = listaletrasestaica[0];
@@ -148,7 +154,7 @@
     })
 
     socket.on('perdedor-a-anfitrion', (usuario) => {
-        alert('El perdedor es: ' + usuario);
+        alert('El Usuario: ' + usuario + ' ha perdido');
     });
 
     function reiniciar() {
