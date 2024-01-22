@@ -8,134 +8,85 @@
 </head>
 
 <body>
-    <div id="sidebar">
-        <label for="campoNombre" id="nombreusuario">Ingrese su apodo</label>
-        <input type="text" id="campoNombre" />
-        <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
-        <p id="statusDescripcion">El estado de la partida es:
-        <p id="statusP"></p>
-        </p>
-    </div>
-    <div class="container">
-        <h1 class="text-center">El Ahorcado</h1>
-        <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span></div>
-        <div class="text-center">
-            <img id='hangmanPic' src="./images/0.jpg" alt="">
-            <p>Adivina la palabra</p>
-            <p id="palabraResaltada"></p>
-            <div id="keyboard"></div>
+    <div class="fondo">
+        <div class="barraLateralizquierda" id="sidebar">
+            <label for="campoNombre" id="nombreusuario">Ingrese su apodo</label>
+            <input type="text" id="campoNombre" />
+            <button id="aceptarNombre" onclick="nombre()">Aceptar</button>
+            <p id="statusDescripcion">El estado de la partida es:
+            <p id="statusP"></p>
+            </p>
         </div>
-        <button id="jugarNuevo" style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
-    </div>
-    <div id="sidebar-left" onclick="null">
-        <div id="time" onclick="null">0</div>
-        <canvas id="stopwatch" width=200 height=200 onclick="null"></canvas>
-        <img id="reset" src="">
-        <label for="reset" style="text-align: center;"></label>
-        <p id="turnoUsuario"></p>
+        <div class="container">
+            <h1 class="text-center">El Ahorcado</h1>
+            <div class="float-right">Intentos fallidos <span id="fallos">0</span> of <span id="maximosFallos"></span>
+            </div>
+            <div class="text-center">
+                <img id='hangmanPic' src="./images/0.jpg" alt="">
+                <p>Adivina la palabra</p>
+                <p id="palabraResaltada"></p>
+                <div id="keyboard"></div>
+            </div>
+            <button id="jugarNuevo" style="visibility: hidden;" onclick="reiniciar()">Jugar de nuevo</button>
+        </div>
     </div>
 </body>
 <style>
-    /* Estilos para dispositivos móviles */
-    @media only screen and (max-width: 600px) {
-
-        /* Agrega aquí los estilos para dispositivos móviles */
-        body {
-            font-size: 14px;
-        }
-
-        .container {
-            padding: 10px;
-        }
-    }
-
-    /* Estilos para tabletas */
-    @media only screen and (min-width: 601px) and (max-width: 1024px) {
-
-        /* Agrega aquí los estilos para tabletas */
-        body {
-            font-size: 16px;
-        }
-
-        .container {
-            padding: 20px;
-        }
-    }
-
-    /* Estilos para pantallas grandes */
-    @media only screen and (min-width: 1025px) {
-
-        /* Agrega aquí los estilos para pantallas grandes */
-        body {
-            font-size: 18px;
-        }
-
-        .container {
-            padding: 30px;
-        }
-    }
-
     * {
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
     }
-
     body {
-        font-family: Arial, sans-serif;
-        background-color: black;
+        display: flex;
+        height: 100vh;
         margin: 0;
         padding: 0;
+        background: linear-gradient(#e66465, #9198e5);
     }
 
-    #sidebar {
+    .fondo {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(#e66465, #9198e5);
+    }
+
+    .barraLateralizquierda {
+        margin: 0;
+        padding: 0;
         width: 200px;
         background-color: #ccc;
-        position: fixed;
         top: 0;
         left: 0;
         height: 100%;
     }
 
-    #sidebar-left {
-        width: 300px;
-        background-color: #ccc;
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 100%;
-    }
-
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        max-width: 1000px;
-        height: auto;
-        margin: 0 auto;
-        padding: 20px;
-        background-color: #fff;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        margin-left: 200px;
-    }
-
-    h1 {
+    .container{
+        width: 600px;
+        height: 600px;
+        border-radius: 10px;
+        border-style: solid;
+        position: absolute;
         text-align: center;
-        color: #333;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        
+    }
+
+    input[type="text"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
     }
 
     label {
         display: block;
         margin-bottom: 10px;
         font-weight: bold;
-    }
-
-    input[type="text"] {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
     }
 
     button {
@@ -147,18 +98,9 @@
         cursor: pointer;
     }
 
-    .float-right {
-        float: right;
-    }
-
     #hangmanPic {
         max-width: 100%;
         height: auto;
-        margin-bottom: 10px;
-    }
-
-    p {
-
         margin-bottom: 10px;
     }
 
@@ -228,7 +170,7 @@
 
     #campoNombre {
         margin-top: 20px;
-        padding: 10px 20px;
+        padding: 10px 15px;
         background-color: #333;
         color: #fff;
         border: none;
@@ -238,7 +180,7 @@
 
     #aceptarNombre {
         margin-top: 20px;
-        padding: 10px 20px;
+        padding: 10px 15px;
         background-color: #333;
         color: #fff;
         border: none;
@@ -278,12 +220,12 @@
     //Funcion que busca el estado de la partida en el servidor
     function status() {
         //Se envia una peticion al servidor para saber si la partida ya empezo
-        socket.emit('partida-empezada', (Response) => {         
+        socket.emit('partida-empezada', (Response) => {
             if (Response == true) {
                 //Si la partida ya empezo se muestra un mensaje de que la partida ya empezo
                 document.getElementById('statusP').innerHTML = 'Partida Iniciada';
-                document.getElementById('statusP').style.color = 'red';      
-            } else { 
+                document.getElementById('statusP').style.color = 'red';
+            } else {
                 //Si la partida no ha empezado se muestra un mensaje de que la partida no ha empezado 
                 document.getElementById('statusP').innerHTML = 'Esperando jugadores para empezar la partida';
                 document.getElementById('statusP').style.color = 'green';
@@ -333,7 +275,7 @@
                 if (document.getElementById('campoNombre').value == '') {
                     alert('Ingrese un nombre de usuario');
                     return;
-                //Si la partida no ha empezado y el usuario ya eligio su apodo se le asigna el apodo a la variable usuario y se ocultan los elementos de elegir apodo    
+                    //Si la partida no ha empezado y el usuario ya eligio su apodo se le asigna el apodo a la variable usuario y se ocultan los elementos de elegir apodo    
                 } else {
                     usuario = document.getElementById('campoNombre').value;
                     document.getElementById('campoNombre').style.visibility = 'hidden';
@@ -403,7 +345,7 @@
             if (palabraElegida.indexOf(letraActual) >= 0) {
                 document.getElementById('palabraResaltada').innerHTML = palabraElegida.split('').map(letter => (general.indexOf(letter) >= 0 ? letter : " _ ")).join('');
             }
-        //Si la respuesta es false significa que la letra que envio el usuario es incorrecta    
+            //Si la respuesta es false significa que la letra que envio el usuario es incorrecta    
         } else if (respuesta == false) {
             //Se le suma 1 a la variable fallos y se muestra en pantalla
             document.getElementById('fallos').innerHTML = parseInt(document.getElementById('fallos').innerHTML) + 1;
@@ -452,12 +394,12 @@
     //si el usuario esta conectado o no
     socket.on('verify', (callback) => {
         callback(true);
-    }) 
+    })
 
     //Evento que se ejecuta cuando el usuario se desconecta
     socket.on('disconnect', () => {
         //Se envia un mensaje al servidor de que el usuario se desconecto
-        socket.emit('disconnect');
+        socket.emit('disconnect-usuarios', socket.id, usuario);
     })
 
     //Funcion que sirve para generar los botones de las letras en el html

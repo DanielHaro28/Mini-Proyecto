@@ -251,6 +251,10 @@
         document.getElementById('palabraRandom').innerHTML = '';
         document.getElementById('usuario').innerHTML = '';
         document.getElementById('letra').innerHTML = '';
+        //Se desabilita el boton de reiniar
+        document.getElementById('Reiniciar').disabled = true;
+        //Se envia un mensaje al servidor para reiniciar la partida
+        socket.emit('reiniciar-partida');
     }
 
     //Funcion que sirve para quitar los acentos de una palabra
@@ -276,22 +280,28 @@
 
     //Evento que se ejecuta cuando se le da click al boton de aceptar
     document.getElementById('Aceptar').addEventListener('click', () => {
-        //Se envia la palabra a todos los jugadores
-        socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML, id);
-        //Se deshabilitan los botones de generar palabras
-        document.getElementById('Aceptar').disabled = true;
-        document.getElementById('otraPalabra').disabled = true;
-        //Se envia un mensaje al servidor para saber cuandos jugadores hay en la sala
-        socket.emit('contador-jugadores', (Response) => {
-            //Se actualiza el contador de jugadores
-            maxJugadores = Response;
-            actJugadores = Response;
-            //Se actualiza el contador de jugadores en el html
-            document.getElementById('jugadoresVivos').innerHTML = actJugadores;
-            document.getElementById('jugadoresTotal').innerHTML = maxJugadores;
-            document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
-        });
-
+        //Comprobacion de que la palabra no este vacia
+        if(document.getElementById('palabraRandom').innerHTML == ''){
+            //Se envia un mensaje de alerta que debe generar una palabra       
+            alert('Debe generar una palabra');
+            return;    
+        } else {
+            //Se envia la palabra a todos los jugadores
+            socket.emit('enviar-palabra-todos', document.getElementById('palabraRandom').innerHTML, id);
+            //Se deshabilitan los botones de generar palabras
+            document.getElementById('Aceptar').disabled = true;
+            document.getElementById('otraPalabra').disabled = true;
+            //Se envia un mensaje al servidor para saber cuandos jugadores hay en la sala
+            socket.emit('contador-jugadores', (Response) => {
+                //Se actualiza el contador de jugadores
+                maxJugadores = Response;
+                actJugadores = Response;
+                //Se actualiza el contador de jugadores en el html
+                document.getElementById('jugadoresVivos').innerHTML = actJugadores;
+                document.getElementById('jugadoresTotal').innerHTML = maxJugadores;
+                document.getElementById('jugadoresDerrotados').innerHTML = derJugadores;
+            });
+        }
     })
 
     // funcion que sirve cuando se presiona el boton de buena o mala

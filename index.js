@@ -96,6 +96,16 @@ io.on('connection', (socket) => {
     callback(contadorJugadores)
   });
 
+  //Esta conexion se ultiliza para que el anfitrion pueda resetear la partida
+  //Y establecer todas las variables a su estado inicial
+  socket.on('reiniciar-partida', () => {
+    //Se reinicia las variables para que el anfitrion o otro anfitrion pueda iniciar una nueva partida
+    partidaEmpezada = false;
+    listaJugadores = [];
+    estadoJugador = [];
+    contadorJugadores = 0;
+  });
+
   //Esta conexion se ultiliza cuando hay una conexion fallida
   socket.on('connect_failed', () => {
     //Se registran los errores en la consola
@@ -106,6 +116,17 @@ io.on('connection', (socket) => {
   socket.on('reconnect_failed', () => {
     //Se registran los errores en la consola
     console.log('error');
+  });
+
+  socket.on('disconnect-usuario', (usuario, id) => {
+    for (let i = 0; i < listaJugadores.length; i++) {
+      socket.to(listaJugadores[i]).emit('verify', (callback) => {
+        estadoConexion = callback;
+        if (estadoConexion == null) {
+          estadoJugador[i] = false;
+        }
+      })
+    }
   });
 
   //Esta conexion se ultiliza cuando alguien se desconecta del servidor
@@ -123,32 +144,32 @@ io.on('connection', (socket) => {
 });
 
 //Se le dice al servidor que use el directorio public
-app.use(express.static(path.join(__dirname + '/public')));
+app.use(express.static(path.join(__dirname + '/src/public')));
 
 //Se le dice al servidor que use el directorio public/images
-app.use(express.static(path.join(__dirname + '/public/images')));
+app.use(express.static(path.join(__dirname + '/src/public/images')));
 
 //Se le dice al servidor que use caundo se haga una peticion a la ruta /, se devuelva el archivo homepage.html
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '/homepage.html'));
+  res.sendFile(path.join(__dirname, '/src/homepage.html'));
 });
 
 //Se le dice al servidor que use caundo se haga una peticion a la ruta /admin, se devuelva el archivo admin.html
 app.get('/admin', function (req, res) {
-  res.sendFile(path.join(__dirname, '/admin.html'));
+  res.sendFile(path.join(__dirname, '/src/admin.html'));
 });
 
 //Se le dice al servidor que use caundo se haga una peticion a la ruta /index, se devuelva el archivo index.html
 app.get('/index', function (req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join(__dirname, '/src/index.html'));
 });
 
 //Se le dice al servidor que use caundo se haga una peticion a la ruta /playername, se devuelva el archivo playername.html
 app.get('/playername', function (req, res) {
-  res.sendFile(path.join(__dirname, '/playername.html'));
+  res.sendFile(path.join(__dirname, '/src/playername.html'));
 });
 
 //Se le dice al servidor que use caundo se haga una peticion a la ruta /admingame, se devuelva el archivo admingame.html
 app.get('/admingame', function (req, res) {
-  res.sendFile(path.join(__dirname, '/admingame.html'));
+  res.sendFile(path.join(__dirname, '/src/admingame.html'));
 });
