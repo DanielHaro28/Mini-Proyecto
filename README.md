@@ -12,7 +12,7 @@ Si por algun motivo no inicia a la primera verificar que este en la carpeta del 
 
 Preferiblemente usar este link para clonarlo en otro codespace
 
-Si usa otro metodo exotico para clonar el reposito usar estos comandos y no inicia a la primera estas son las instalaciones que hice:
+Si usa otro metodo exotico para clonar el reposito usar y no sirven estos comandos estas son las instalaciones que hice:
 
 npm i ws
 
