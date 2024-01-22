@@ -10,6 +10,10 @@ Si por algun motivo no inicia a la primera verificar que este en la carpeta del 
 
 ![image](https://github.com/DanielHaro28/Mini-Proyecto/assets/149003502/acdc0f1d-edc6-4584-9ef4-3cc22cc593e5)
 
+Preferiblemente usar este link para clonarlo en otro codespace
+Si usa otro metodo exotico para clonar el reposito usar estos comandos
+
+
 
 
 
